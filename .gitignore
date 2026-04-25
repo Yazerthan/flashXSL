@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.*.local
+workdir/
+saxon/
+*.log
+.DS_Store

@@ -1,0 +1,39 @@
+services:
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: xsl-pipeline-server
+    restart: unless-stopped
+    volumes:
+      - ./server/saxon:/app/saxon:ro
+      - xsl-workdir:/app/workdir
+    environment:
+      - NODE_ENV=production
+    networks:
+      - xsl-net
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: xsl-pipeline-client
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - server
+    networks:
+      - xsl-net
+      - proxy-net # Connexion directe au proxy
+
+volumes:
+  xsl-workdir:
+    driver: local
+
+networks:
+  xsl-net:
+    driver: bridge
+  proxy-net:
+    external: true
