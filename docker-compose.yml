@@ -20,8 +20,8 @@ services:
       dockerfile: Dockerfile
     container_name: xsl-pipeline-client
     restart: unless-stopped
-    ports:
-      - "8081:80"
+    # ports:
+    #   - "8081:80"
     depends_on:
       - server
     networks:

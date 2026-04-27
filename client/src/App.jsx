@@ -21,6 +21,7 @@ function AppInner() {
   const [progress, setProgress] = useState(0);
   const [systemStatus, setSystemStatus] = useState({ java: null, saxon: null });
   const [sourcePreviewOpen, setSourcePreviewOpen] = useState(false);
+  const [error, setError] = useState(null);            // { message, details }
 
   // Vérification Java / Saxon au démarrage
   useEffect(() => {
@@ -65,6 +66,7 @@ function AppInner() {
 
     setIsRunning(true);
     setProgress(10);
+    setError(null);
 
     try {
       const sessionId = localStorage.getItem('xsl-session-id') || 'default';
@@ -84,7 +86,9 @@ function AppInner() {
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Erreur de transformation');
+        const err = new Error(data.error || 'Erreur de transformation');
+        err.details = data.details;
+        throw err;
       }
 
       setResult(data.result);
@@ -95,6 +99,10 @@ function AppInner() {
 
       setTimeout(() => setProgress(0), 800);
     } catch (err) {
+      setError({
+        message: err.message,
+        details: err.details || 'Aucun détail supplémentaire'
+      });
       addToast(`Erreur : ${err.message}`, 'error');
       setProgress(0);
     } finally {
@@ -223,6 +231,7 @@ function AppInner() {
           resultPath={resultPath}
           customCss={customCss}
           onCssChange={setCustomCss}
+          error={error}
         />
       </main>
 

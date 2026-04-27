@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Download, Code2, Eye, Palette, RefreshCw, AlertTriangle, Target, Check, FileCode, Maximize2, X, Copy } from 'lucide-react';
+import { Download, Code2, Eye, Palette, RefreshCw, AlertTriangle, Target, Check, FileCode, Maximize2, X, Copy, Terminal } from 'lucide-react';
 import { useToast } from '../hooks/useToast';
 import format from 'xml-formatter';
 import FormattedCode from './FormattedCode';
@@ -10,9 +10,10 @@ const TABS = [
   { id: 'preview', label: 'Rendu HTML', icon: <Eye size={13} /> },
   { id: 'styled', label: 'Rendu stylé', icon: <Palette size={13} /> },
   { id: 'steps', label: 'Étapes', icon: <RefreshCw size={13} /> },
+  { id: 'console', label: 'Console', icon: <Terminal size={13} /> },
 ];
 
-export default function ResultPanel({ source, result, steps, resultPath, customCss, onCssChange }) {
+export default function ResultPanel({ source, result, steps, resultPath, customCss, onCssChange, error }) {
   const [activeTab, setActiveTab] = useState('source');
   const iframeRef = useRef(null);
   const styledRef = useRef(null);
@@ -20,6 +21,13 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
   const scrollPosRef = useRef(0); // Stocke le % de scroll (0 à 1)
   const [expandedStep, setExpandedStep] = useState(null); // { title, content }
   const { addToast } = useToast();
+  
+  // Auto-switch vers l'onglet console en cas d'erreur
+  useEffect(() => {
+    if (error) {
+      setActiveTab('console');
+    }
+  }, [error]);
 
   // Fonction pour synchroniser le scroll vers un élément/iframe
   const applyScroll = (target, percentage) => {
@@ -137,7 +145,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
     addToast('HTML stylé téléchargé', 'success');
   };
 
-  if (!result) {
+  if (!result && !error) {
     return (
       <div className="preview-panel" style={{ justifyContent: 'center', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
         {/* Image de fond subtile */}
@@ -181,18 +189,29 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
               className={`preview-tab${activeTab === t.id ? ' active' : ''}`}
               onClick={() => setActiveTab(t.id)}
             >
-              {t.icon}
-              {t.label}
+               {t.id === 'console' && error && <span className="tab-error-dot" />}
+               {t.icon}
+               {t.label}
             </button>
           ))}
         </div>
 
         {/* Download buttons */}
         <div className="flex gap-2" style={{ marginLeft: 'auto' }}>
-          <button className="btn btn-secondary btn-sm" onClick={handleDownload} title="Télécharger XML brut">
+          <button 
+            className="btn btn-secondary btn-sm" 
+            onClick={handleDownload} 
+            disabled={!result}
+            title="Télécharger XML brut"
+          >
             <Download size={13} /> XML
           </button>
-          <button className="btn btn-success btn-sm" onClick={handleDownloadHtml} title="Télécharger HTML stylé">
+          <button 
+            className="btn btn-success btn-sm" 
+            onClick={handleDownloadHtml} 
+            disabled={!result}
+            title="Télécharger HTML stylé"
+          >
             <Download size={13} /> HTML stylé
           </button>
         </div>
@@ -205,7 +224,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
           <div className="code-viewer">
             <div className="code-viewer-header">
               <span className="text-xs text-secondary font-mono">result.xml</span>
-              <span className="text-xs text-muted">{result.length.toLocaleString()} caractères</span>
+              <span className="text-xs text-muted">{result ? result.length.toLocaleString() : 0} caractères</span>
             </div>
             <div className="code-viewer-content-prism">
               <FormattedCode
@@ -303,6 +322,34 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
             )) : (
               <div className="empty-state">
                 <p>Aucune étape à afficher</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'console' && (
+          <div className="console-view fade-in">
+            {error ? (
+              <div className="error-console-card">
+                <div className="error-console-header">
+                  <AlertTriangle size={16} />
+                  <span>{error.message}</span>
+                </div>
+                <div className="error-console-body">
+                  <FormattedCode 
+                    code={error.details} 
+                    language="bash" 
+                    maxHeight="500px" 
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <Terminal size={40} style={{ opacity: 0.2, marginBottom: 16 }} />
+                <p>Aucune erreur ou log à afficher</p>
+                <p className="text-xs text-muted" style={{ marginTop: 8 }}>
+                  Les erreurs Saxon apparaîtront ici en cas d'échec du pipeline.
+                </p>
               </div>
             )}
           </div>
