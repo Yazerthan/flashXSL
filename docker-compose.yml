@@ -10,7 +10,7 @@ services:
       - ./server/saxon:/app/saxon:ro
       - xsl-workdir:/app/workdir
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=${NODE_ENV}
     networks:
       - xsl-net
 

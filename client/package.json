@@ -16,6 +16,8 @@
     "@vitejs/plugin-react": "^6.0.1",
     "axios": "^1.15.2",
     "lucide-react": "^1.8.0",
-    "react-beautiful-dnd": "^13.1.1"
+    "react-beautiful-dnd": "^13.1.1",
+    "react-syntax-highlighter": "^16.1.1",
+    "xml-formatter": "^3.7.0"
   }
 }

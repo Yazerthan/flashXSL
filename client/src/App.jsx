@@ -3,6 +3,7 @@ import { ToastProvider, useToast } from './hooks/useToast';
 import SourceDropZone from './components/SourceDropZone';
 import XslPipeline from './components/XslPipeline';
 import ResultPanel from './components/ResultPanel';
+import FormattedCode from './components/FormattedCode';
 import { Play, Zap, Settings, AlertCircle, CheckCircle, Loader2, FileCode, Link, Info, Palette } from 'lucide-react';
 import DEFAULT_RESULT_CSS from './assets/result-default.css?raw';
 
@@ -173,8 +174,8 @@ function AppInner() {
             </button>
             {sourcePreviewOpen && (
               <div className="code-viewer" style={{ marginTop: 8 }}>
-                <div className="code-viewer-content" style={{ maxHeight: 180, fontSize: '0.68rem' }}>
-                  {source.content}
+                <div className="code-viewer-content-prism" style={{ maxHeight: 200 }}>
+                  <FormattedCode code={source.content} maxHeight="200px" />
                 </div>
               </div>
             )}

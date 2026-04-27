@@ -443,6 +443,35 @@ body {
   white-space: pre;
 }
 
+.code-viewer-content-prism {
+  background: #0a0c14;
+  overflow: hidden;
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.fullscreen-content-prism {
+  flex: 1;
+  background: #080a10;
+  overflow: hidden; /* Le scroll est géré par SyntaxHighlighter à l'intérieur */
+  display: flex;
+  flex-direction: column;
+}
+
+.formatted-code-container {
+  width: 100%;
+  transition: var(--transition);
+}
+
+.formatted-code-container .copy-btn {
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.formatted-code-container:hover .copy-btn {
+  opacity: 1;
+}
+
 /* ── Preview panel ──────────────────────────────────────────── */
 .preview-panel {
   flex: 1;

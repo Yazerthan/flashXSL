@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Download, Code2, Eye, Palette, RefreshCw, AlertTriangle, Target, Check, FileCode, Maximize2, X } from 'lucide-react';
+import { Download, Code2, Eye, Palette, RefreshCw, AlertTriangle, Target, Check, FileCode, Maximize2, X, Copy } from 'lucide-react';
 import { useToast } from '../hooks/useToast';
+import format from 'xml-formatter';
+import FormattedCode from './FormattedCode';
 import deskIcon from '../assets/desk_white.svg';
 
 const TABS = [
@@ -34,26 +36,33 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
     const { scrollTop, scrollHeight, clientHeight } = e.target;
     const maxScroll = scrollHeight - clientHeight;
     if (maxScroll > 0) {
-      scrollPosRef.current = scrollTop / maxScroll + 0.03;
+      scrollPosRef.current = scrollTop / maxScroll;
     }
   };
 
   // Capturer le scroll depuis les iframes
-  const attachIframeScroll = (iframe, tabId) => {
+  const attachIframeScroll = (iframe) => {
     if (!iframe) return;
-    const doc = iframe.contentDocument;
-    if (!doc) return;
+    const win = iframe.contentWindow;
+    if (!win) return;
 
     const onScroll = () => {
+      const doc = win.document;
       const body = doc.documentElement || doc.body;
       const maxScroll = body.scrollHeight - body.clientHeight;
       if (maxScroll > 0) {
-        scrollPosRef.current = body.scrollTop / maxScroll - 0.03;
+        scrollPosRef.current = body.scrollTop / maxScroll;
       }
     };
 
-    doc.addEventListener('scroll', onScroll);
-    return () => doc.removeEventListener('scroll', onScroll);
+    // On attache aux deux pour être sûr (selon le navigateur)
+    win.addEventListener('scroll', onScroll);
+    win.document.addEventListener('scroll', onScroll);
+    
+    return () => {
+      win.removeEventListener('scroll', onScroll);
+      win.document?.removeEventListener('scroll', onScroll);
+    };
   };
 
   // Appliquer le scroll lors du changement d'onglet
@@ -68,6 +77,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
 
   // Injecter le CSS personnalisé dans l'iframe styled
   useEffect(() => {
+    let cleanup;
     if (activeTab === 'styled' && styledRef.current && result) {
       const doc = styledRef.current.contentDocument || styledRef.current.contentWindow?.document;
       if (doc) {
@@ -78,14 +88,16 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
 </head><body>${result}</body></html>`);
         doc.close();
         // Attacher le listener et appliquer le scroll initial
-        attachIframeScroll(styledRef.current, 'styled');
+        cleanup = attachIframeScroll(styledRef.current);
         applyScroll(styledRef.current, scrollPosRef.current);
       }
     }
+    return () => cleanup && cleanup();
   }, [activeTab, result, customCss]);
 
   // Iframe pour le preview brut
   useEffect(() => {
+    let cleanup;
     if (activeTab === 'preview' && iframeRef.current && result) {
       const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
       if (doc) {
@@ -93,10 +105,11 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
         doc.write(result);
         doc.close();
         // Attacher le listener et appliquer le scroll initial
-        attachIframeScroll(iframeRef.current, 'preview');
+        cleanup = attachIframeScroll(iframeRef.current);
         applyScroll(iframeRef.current, scrollPosRef.current);
       }
     }
+    return () => cleanup && cleanup();
   }, [activeTab, result]);
 
   const handleDownload = () => {
@@ -194,12 +207,13 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
               <span className="text-xs text-secondary font-mono">result.xml</span>
               <span className="text-xs text-muted">{result.length.toLocaleString()} caractères</span>
             </div>
-            <div
-              ref={sourceRef}
-              className="code-viewer-content"
-              onScroll={handleSourceScroll}
-            >
-              {result}
+            <div className="code-viewer-content-prism">
+              <FormattedCode
+                ref={sourceRef}
+                code={result}
+                onScroll={handleSourceScroll}
+                maxHeight="600px"
+              />
             </div>
           </div>
         )}
@@ -249,8 +263,8 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                   <span className="text-xs font-mono" style={{ color: 'var(--accent-secondary)', display: 'flex', alignItems: 'center', gap: 6 }}>
                     <FileCode size={12} /> {source.name}
                   </span>
-                  <button 
-                    className="btn-icon btn-sm" 
+                  <button
+                    className="btn-icon btn-sm"
                     style={{ marginLeft: 'auto', padding: 2 }}
                     onClick={() => setExpandedStep({ title: source.name, content: source.content })}
                     title="Plein écran"
@@ -258,8 +272,8 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                     <Maximize2 size={12} />
                   </button>
                 </div>
-                <div className="code-viewer-content" style={{ maxHeight: 150, fontSize: '0.68rem', padding: '10px 14px', opacity: 0.8 }}>
-                  {source.content}
+                <div className="code-viewer-content-prism" style={{ maxHeight: 150, opacity: 0.8 }}>
+                  <FormattedCode code={source.content} maxHeight="150px" />
                 </div>
               </div>
             )}
@@ -272,8 +286,8 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                     <span className="text-xs text-muted" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <Check size={12} style={{ color: 'var(--accent-success)' }} /> OK
                     </span>
-                    <button 
-                      className="btn-icon btn-sm" 
+                    <button
+                      className="btn-icon btn-sm"
                       style={{ padding: 2 }}
                       onClick={() => setExpandedStep({ title: `Étape ${s.step} : ${s.xslName}`, content: s.fullOutput })}
                       title="Plein écran"
@@ -282,8 +296,8 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                     </button>
                   </div>
                 </div>
-                <div className="code-viewer-content" style={{ maxHeight: 120, fontSize: '0.68rem', padding: '10px 14px' }}>
-                  {s.outputPreview}…
+                <div className="code-viewer-content-prism" style={{ maxHeight: 120 }}>
+                  <FormattedCode code={s.outputPreview + '…'} maxHeight="120px" />
                 </div>
               </div>
             )) : (
@@ -307,8 +321,8 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                   <X size={20} />
                 </button>
               </div>
-              <div className="fullscreen-content">
-                <pre>{expandedStep.content}</pre>
+              <div className="fullscreen-content-prism">
+                <FormattedCode code={expandedStep.content} />
               </div>
             </div>
           </div>
