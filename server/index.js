@@ -164,15 +164,19 @@ app.delete('/api/session/:id', (req, res) => {
   res.json({ success: true });
 });
 
-// ── Charger le preset de nettoyage ──────────────────────────────────────────
-app.get('/api/presets/nettoyage', (req, res) => {
+// ── Charger un preset par son nom ──────────────────────────────────────────
+app.get('/api/presets/:name', (req, res) => {
+  const { name } = req.params;
   const sessionId = req.headers['x-session-id'] || uuidv4();
   const sessionDir = path.join(WORK_DIR, sessionId);
-  const presetSource = path.join(PRESETS_DIR, 'nettoyage.xsl');
-  const presetDest = path.join(sessionDir, 'nettoyage.xsl');
+  
+  // Sécurité : s'assurer que le nom finit par .xsl
+  const xslName = name.endsWith('.xsl') ? name : `${name}.xsl`;
+  const presetSource = path.join(PRESETS_DIR, xslName);
+  const presetDest = path.join(sessionDir, xslName);
 
   if (!fs.existsSync(presetSource)) {
-    return res.status(404).json({ error: 'Preset introuvable' });
+    return res.status(404).json({ error: `Preset '${xslName}' introuvable` });
   }
 
   if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
@@ -182,7 +186,7 @@ app.get('/api/presets/nettoyage', (req, res) => {
 
   res.json({
     id: uuidv4(),
-    name: 'nettoyage.xsl',
+    name: xslName,
     path: presetDest,
     sessionId: sessionId
   });

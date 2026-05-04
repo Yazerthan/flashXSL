@@ -4,8 +4,14 @@ import SourceDropZone from './components/SourceDropZone';
 import XslPipeline from './components/XslPipeline';
 import ResultPanel from './components/ResultPanel';
 import FormattedCode from './components/FormattedCode';
-import { Play, Zap, Settings, AlertCircle, CheckCircle, Loader2, FileCode, Link, Info, Palette, Sun, Moon } from 'lucide-react';
+import { Play, Zap, Settings, AlertCircle, CheckCircle, Loader2, FileCode, Link, Info, Palette, Sun, Moon, ListFilter, ChevronDown, ChevronUp } from 'lucide-react';
 import DEFAULT_RESULT_CSS from './assets/result-default.css?raw';
+
+const PIPELINE_PRESETS = [
+  { id: 'cleanINDD', name: 'Nettoyage inDesign', xsls: ['nettoyage'] },
+  { id: 'word', name: 'Niso vers Word', xsls: ['niso2html'] },
+  { id: 'preset3', name: 'Preset à venir...', xsls: [] },
+];
 
 function AppInner() {
   const { addToast } = useToast();
@@ -23,6 +29,7 @@ function AppInner() {
   const [sourcePreviewOpen, setSourcePreviewOpen] = useState(false);
   const [error, setError] = useState(null);            // { message, details }
   const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'dark');
+  const [presetsOpen, setPresetsOpen] = useState(false);
 
   // Vérification Java / Saxon au démarrage
   useEffect(() => {
@@ -38,20 +45,44 @@ function AppInner() {
     localStorage.setItem('app-theme', theme);
   }, [theme]);
 
+  const loadPreset = useCallback(async (presetId) => {
+    const preset = PIPELINE_PRESETS.find(p => p.id === presetId);
+    if (!preset) return;
+
+    setIsRunning(true);
+    const sessionId = localStorage.getItem('xsl-session-id') || 'default';
+    const newPipeline = [];
+
+    try {
+      for (const xslName of preset.xsls) {
+        const r = await fetch(`/api/presets/${xslName}`, {
+          headers: { 'x-session-id': sessionId }
+        });
+
+        const data = await r.json();
+
+        if (!r.ok) {
+          throw new Error(data.error || `Impossible de charger ${xslName}`);
+        }
+
+        if (data.path) {
+          newPipeline.push({ id: data.id, name: data.name, path: data.path });
+        }
+      }
+      setPipeline(newPipeline);
+      addToast(`Preset "${preset.name}" chargé`, 'success');
+    } catch (err) {
+      console.error('Erreur chargement preset:', err);
+      addToast('Erreur lors du chargement du preset', 'error');
+    } finally {
+      setIsRunning(false);
+    }
+  }, [addToast]);
+
   // Pré-chargement du XSL de nettoyage si le pipeline est vide
   useEffect(() => {
     if (pipeline.length === 0) {
-      const sessionId = localStorage.getItem('xsl-session-id');
-      fetch('/api/presets/nettoyage', {
-        headers: { 'x-session-id': sessionId || '' }
-      })
-        .then(r => r.json())
-        .then(data => {
-          if (data.path) {
-            setPipeline([{ id: data.id, name: data.name, path: data.path }]);
-          }
-        })
-        .catch(err => console.error('Erreur chargement preset:', err));
+      loadPreset('cleanINDD');
     }
   }, []); // Ne s'exécute qu'au montage initial
 
@@ -216,6 +247,38 @@ function AppInner() {
           </span>
         </div>
         <XslPipeline pipeline={pipeline} setPipeline={setPipeline} />
+
+        {/* Pipeline presets (Retractable) */}
+        <div style={{ borderTop: '1px solid var(--border)' }}>
+          <button
+            className="flex items-center justify-between w-full p-3 text-xs font-semibold text-secondary hover:bg-hover"
+            onClick={() => setPresetsOpen(!presetsOpen)}
+            style={{ border: 'none', background: 'transparent', cursor: 'pointer', transition: 'var(--transition)' }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <ListFilter size={12} /> Pipelines presets
+            </span>
+            {presetsOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+
+          {presetsOpen && (
+            <div className="fade-in" style={{ padding: '0 16px 16px', background: 'var(--bg-elevated)' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 8 }}>
+                {PIPELINE_PRESETS.map(p => (
+                  <button
+                    key={p.id}
+                    className="btn btn-secondary btn-sm"
+                    style={{ padding: '4px 8px', fontSize: '0.68rem', flex: '1 0 45%' }}
+                    onClick={() => loadPreset(p.id)}
+                    disabled={isRunning}
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Pipeline actions */}
         {pipeline.length > 0 && (
