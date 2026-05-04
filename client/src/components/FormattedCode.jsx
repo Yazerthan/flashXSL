@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { tomorrow as codeTheme } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { tomorrow as darkTheme, prism as lightTheme } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import format from 'xml-formatter';
 import { useToast } from '../hooks/useToast';
 import { Copy } from 'lucide-react';
@@ -8,7 +8,7 @@ import { Copy } from 'lucide-react';
 /**
  * Helper pour formater et colorer le code XML/HTML
  */
-const FormattedCode = forwardRef(({ code, language = 'xml', maxHeight = 'none', onScroll }, ref) => {
+const FormattedCode = forwardRef(({ code, language = 'xml', maxHeight = 'none', onScroll, theme = 'dark' }, ref) => {
   const { addToast } = useToast();
 
   const formattedCode = typeof code === 'string' ? (() => {
@@ -68,7 +68,7 @@ const FormattedCode = forwardRef(({ code, language = 'xml', maxHeight = 'none', 
       >
         <SyntaxHighlighter
           language={language}
-          style={codeTheme}
+          style={theme === 'dark' ? darkTheme : lightTheme}
           customStyle={{
             margin: 0,
             padding: '16px',

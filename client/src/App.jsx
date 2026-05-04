@@ -4,7 +4,7 @@ import SourceDropZone from './components/SourceDropZone';
 import XslPipeline from './components/XslPipeline';
 import ResultPanel from './components/ResultPanel';
 import FormattedCode from './components/FormattedCode';
-import { Play, Zap, Settings, AlertCircle, CheckCircle, Loader2, FileCode, Link, Info, Palette } from 'lucide-react';
+import { Play, Zap, Settings, AlertCircle, CheckCircle, Loader2, FileCode, Link, Info, Palette, Sun, Moon } from 'lucide-react';
 import DEFAULT_RESULT_CSS from './assets/result-default.css?raw';
 
 function AppInner() {
@@ -22,6 +22,7 @@ function AppInner() {
   const [systemStatus, setSystemStatus] = useState({ java: null, saxon: null });
   const [sourcePreviewOpen, setSourcePreviewOpen] = useState(false);
   const [error, setError] = useState(null);            // { message, details }
+  const [theme, setTheme] = useState(localStorage.getItem('app-theme') || 'dark');
 
   // Vérification Java / Saxon au démarrage
   useEffect(() => {
@@ -30,6 +31,12 @@ function AppInner() {
       .then(d => setSystemStatus(d))
       .catch(() => setSystemStatus({ java: false, saxon: false }));
   }, []);
+
+  // Application du thème
+  useEffect(() => {
+    document.body.setAttribute('data-theme', theme);
+    localStorage.setItem('app-theme', theme);
+  }, [theme]);
 
   // Pré-chargement du XSL de nettoyage si le pipeline est vide
   useEffect(() => {
@@ -119,9 +126,11 @@ function AppInner() {
       {/* ── Header ──────────────────────────────────────────── */}
       <header className="app-header">
         <div className="logo">
-          <div className="logo-icon"><Zap size={18} fill="currentColor" /></div>
+          <div className="logo-icon" style={{ color: 'white' }}>
+            <Zap size={18} fill="white" style={{}} />
+          </div>
           <div className="logo-text">
-            DESK<span>Pipeline</span>
+            flash<span>XSL</span>
           </div>
         </div>
 
@@ -149,8 +158,18 @@ function AppInner() {
           )}
         </button>
 
+        {/* Theme toggle */}
+        <button
+          className="btn-icon"
+          style={{ marginLeft: 'auto', marginRight: 8 }}
+          onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}
+          title={theme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre'}
+        >
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
         {/* System status */}
-        <div className="header-status">
+        <div className="header-status" style={{ marginLeft: 0 }}>
           <span className={`status-dot ${javaOk === null ? '' : javaOk ? 'ok' : 'err'}`} />
           <span>Java</span>
           <span className={`status-dot ${saxonOk === null ? '' : saxonOk ? 'ok' : 'warn'}`} />
@@ -183,7 +202,7 @@ function AppInner() {
             {sourcePreviewOpen && (
               <div className="code-viewer" style={{ marginTop: 8 }}>
                 <div className="code-viewer-content-prism" style={{ maxHeight: 200 }}>
-                  <FormattedCode code={source.content} maxHeight="200px" />
+                  <FormattedCode code={source.content} maxHeight="200px" theme={theme} />
                 </div>
               </div>
             )}
@@ -232,6 +251,7 @@ function AppInner() {
           customCss={customCss}
           onCssChange={setCustomCss}
           error={error}
+          theme={theme}
         />
       </main>
 

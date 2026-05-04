@@ -13,7 +13,7 @@ const TABS = [
   { id: 'console', label: 'Console', icon: <Terminal size={13} /> },
 ];
 
-export default function ResultPanel({ source, result, steps, resultPath, customCss, onCssChange, error }) {
+export default function ResultPanel({ source, result, steps, resultPath, customCss, onCssChange, error, theme }) {
   const [activeTab, setActiveTab] = useState('source');
   const iframeRef = useRef(null);
   const styledRef = useRef(null);
@@ -232,6 +232,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                 code={result}
                 onScroll={handleSourceScroll}
                 maxHeight="600px"
+                theme={theme}
               />
             </div>
           </div>
@@ -292,7 +293,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                   </button>
                 </div>
                 <div className="code-viewer-content-prism" style={{ maxHeight: 150, opacity: 0.8 }}>
-                  <FormattedCode code={source.content} maxHeight="150px" />
+                  <FormattedCode code={source.content} maxHeight="150px" theme={theme} />
                 </div>
               </div>
             )}
@@ -316,7 +317,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                   </div>
                 </div>
                 <div className="code-viewer-content-prism" style={{ maxHeight: 120 }}>
-                  <FormattedCode code={s.outputPreview + '…'} maxHeight="120px" />
+                  <FormattedCode code={s.outputPreview + '…'} maxHeight="120px" theme={theme} />
                 </div>
               </div>
             )) : (
@@ -340,6 +341,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                     code={error.details} 
                     language="bash" 
                     maxHeight="500px" 
+                    theme={theme}
                   />
                 </div>
               </div>
@@ -369,7 +371,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                 </button>
               </div>
               <div className="fullscreen-content-prism">
-                <FormattedCode code={expandedStep.content} />
+                <FormattedCode code={expandedStep.content} theme={theme} />
               </div>
             </div>
           </div>

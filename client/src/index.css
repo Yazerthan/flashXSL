@@ -30,8 +30,33 @@
   --shadow-glow: 0 0 20px rgba(108, 99, 255, 0.25);
   --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.6);
+  --bg-code: #0a0c14;
+  --bg-code-deep: #080a10;
 
   --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='light'] {
+  --bg-base: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-elevated: #f8fafc;
+  --bg-hover: #e2e8f0;
+  --bg-active: #cbd5e1;
+  --bg-code: #ffffff;
+  --bg-code-deep: #f8fafc;
+
+  --accent-primary: #5c54e5;
+  --border: rgba(92, 84, 229, 0.15);
+  --border-hover: rgba(92, 84, 229, 0.35);
+  --border-active: rgba(92, 84, 229, 0.5);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --shadow-glow: 0 0 15px rgba(92, 84, 229, 0.15);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* ── Reset & Base ───────────────────────────────────────────── */
@@ -55,6 +80,7 @@ body {
   min-height: 100vh;
   line-height: 1.6;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Scrollbar personnalisée */
@@ -417,7 +443,7 @@ body {
 
 /* ── Code viewer ────────────────────────────────────────────── */
 .code-viewer {
-  background: #0a0c14;
+  background: var(--bg-code);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -444,7 +470,7 @@ body {
 }
 
 .code-viewer-content-prism {
-  background: #0a0c14;
+  background: var(--bg-code);
   overflow: hidden;
   border-bottom-left-radius: var(--radius-md);
   border-bottom-right-radius: var(--radius-md);
@@ -452,7 +478,7 @@ body {
 
 .fullscreen-content-prism {
   flex: 1;
-  background: #080a10;
+  background: var(--bg-code-deep);
   overflow: hidden; /* Le scroll est géré par SyntaxHighlighter à l'intérieur */
   display: flex;
   flex-direction: column;
@@ -545,7 +571,7 @@ body {
 }
 
 .error-console-body {
-  background: #0d0101;
+  background: var(--bg-code-deep);
 }
 
 .preview-body {
@@ -638,8 +664,8 @@ body {
 .style-editor textarea {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.73rem;
-  background: #0a0c14;
-  color: #c8d3f5;
+  background: var(--bg-code);
+  color: var(--text-primary);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: 12px;
