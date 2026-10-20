@@ -177,9 +177,12 @@ function AppInner() {
       {/* ── Header ──────────────────────────────────────────── */}
       <header className="app-header">
         <div className="logo">
-          <div className="logo-icon" style={{ color: 'white' }}>
-            <Zap size={18} fill="white" style={{}} />
-          </div>
+          <img
+            src="/logo_flashXSL.svg"
+            alt="flashXSL logo"
+            className="logo-icon"
+            style={{ width: 36, height: 'auto', display: 'block' }}
+          />
           <div className="logo-text">
             flash<span>XSL</span>
           </div>

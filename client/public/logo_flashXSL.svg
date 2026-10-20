@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 612.859 403.962">
+  <defs>
+    <style>
+      .cls-1{fill:url(#linear-gradient-1)}
+      .cls-2{fill:url(#linear-gradient-2)}
+    </style>
+    <linearGradient id="linear-gradient-1" x1="60.157" y1="338.092" x2="344.63" y2="56.341" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#6c63ff"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="266.957" y1="339.453" x2="573.386" y2="79.716" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4ecdc4"/>
+      <stop offset="1" stop-color="#6c63ff"/>
+    </linearGradient>
+  </defs>
+  <title>Untitled-1</title>
+  <g id="Layer_1" data-name="Layer 1">
+    <path d="M11.182 364.24 C430.578 -6.261 -11.06 179.226 87.854 88.001 C186.769 -3.223 312.813 -27.451 369.383 33.887 C425.952 95.225 420.496 200.215 275.642 297.032 C163.771 371.803 -51.352 419.484 11.182 364.24 Z" class="cls-1"/>
+    <path d="M601.677 39.722 C182.28 410.223 623.919 224.736 525.004 315.961 C426.09 407.185 300.045 431.413 243.476 370.075 C186.907 308.737 192.362 203.747 337.216 106.93 C449.087 32.159 664.211 -15.522 601.677 39.722 Z" class="cls-2"/>
+  </g>
+</svg>
