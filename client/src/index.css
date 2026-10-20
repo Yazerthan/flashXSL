@@ -297,6 +297,7 @@ body {
 }
 
 .btn-icon {
+  border: none;
   padding: 6px;
   background: transparent;
   color: var(--text-secondary);
