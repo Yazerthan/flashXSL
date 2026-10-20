@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xpath-default-namespace="http://www.w3.org/1999/xhtml">
@@ -61,5 +61,63 @@
             </xsl:choose>
         </xsl:attribute>
     </xsl:template>
+
+    <!-- ================================================================ -->
+    <!-- Gestion des listes imbriquées Tiret / Puce                       -->
+    <!-- Un <ul> Enum-Puce qui suit directement un <ul> Enum-Tiret        -->
+    <!-- est imbriqué dans le dernier <li> de ce <ul> Enum-Tiret.         -->
+    <!-- Les listes isolées sont copiées sans modification.               -->
+    <!-- ================================================================ -->
+
+    <!-- Supprime les <ul> Puce directement précédés d'un <ul> Tiret :
+         ils seront réémis depuis la template du <ul> Tiret. -->
+    <xsl:template
+        match="ul[li[1][contains(@class, '•6-2_TEXTE-COURANT-Enum-Puce')]]
+                  [preceding-sibling::*[1]
+                      [self::ul[li[1][contains(@class, '•6-1_TEXTE-COURANT-Enum-Tiret')]]]]" />
+
+    <!-- Template pour le <ul> Enum-Tiret.
+         Copie tous les <li> normalement, sauf le dernier dans lequel
+         on injecte le(s) <ul> Puce qui suivent immédiatement. -->
+    <xsl:template
+        match="ul[li[1][contains(@class, '•6-1_TEXTE-COURANT-Enum-Tiret')]]">
+        <xsl:variable name="ul-puce-suivant"
+            select="following-sibling::*[1]
+                        [self::ul[li[1][contains(@class, '•6-2_TEXTE-COURANT-Enum-Puce')]]]" />
+        <xsl:copy>
+            <xsl:apply-templates select="@*" />
+            <!-- Tous les li sauf le dernier : copie normale -->
+            <xsl:apply-templates select="li[position() != last()]" />
+            <!-- Dernier li : on y injecte le ul Puce subordonné -->
+            <xsl:apply-templates select="li[last()]" mode="dernier-tiret">
+                <xsl:with-param name="ul-puce-suivant" select="$ul-puce-suivant" />
+            </xsl:apply-templates>
+        </xsl:copy>
+    </xsl:template>
+
+    <!-- Mode "dernier-tiret" : copie le <li> puis ajoute le <ul> Puce à la fin. -->
+    <xsl:template match="li" mode="dernier-tiret">
+        <xsl:param name="ul-puce-suivant" />
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+            <!-- Injection du ul Puce imbriqué (copie identity via mode imbrique) -->
+            <xsl:if test="$ul-puce-suivant">
+                <xsl:apply-templates select="$ul-puce-suivant" mode="imbrique" />
+            </xsl:if>
+        </xsl:copy>
+    </xsl:template>
+
+    <!-- Mode "imbrique" : copie le <ul> Puce avec son contenu normal. -->
+    <xsl:template match="ul" mode="imbrique">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+        </xsl:copy>
+    </xsl:template>
+
+    <!-- ================================================================ -->
+    <!-- Suppression des u2026/u2026 isoles                               -->
+    <!-- Correspond a un <p> dont normalize-space(.) = 'u2026/u2026'     -->
+    <!-- ================================================================ -->
+    <xsl:template match="p[normalize-space(.) = '…/…']" />
 
 </xsl:stylesheet>

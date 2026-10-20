@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Download, Code2, Eye, Palette, RefreshCw, AlertTriangle, Target, Check, FileCode, Maximize2, X, Copy, Terminal } from 'lucide-react';
 import { useToast } from '../hooks/useToast';
 import format from 'xml-formatter';
@@ -13,13 +13,21 @@ const TABS = [
   { id: 'console', label: 'Console', icon: <Terminal size={13} /> },
 ];
 
+const BASE_PREVIEW_CSS = `
+  table { border-collapse: collapse; }
+  th, td { border: 1px solid #999; padding: 4px 8px; }
+`;
+
 export default function ResultPanel({ source, result, steps, resultPath, customCss, onCssChange, error, theme }) {
   const [activeTab, setActiveTab] = useState('source');
   const iframeRef = useRef(null);
   const styledRef = useRef(null);
+  const styledFsIframe = useRef(null); // iframe dans le modal plein écran
   const sourceRef = useRef(null);
   const scrollPosRef = useRef(0); // Stocke le % de scroll (0 à 1)
   const [expandedStep, setExpandedStep] = useState(null); // { title, content }
+  // 'render' = plein écran iframe stylé | 'css' = plein écran feuille de style | null = fermé
+  const [styledFullscreen, setStyledFullscreen] = useState(null);
   const { addToast } = useToast();
   
   // Auto-switch vers l'onglet console en cas d'erreur
@@ -103,6 +111,41 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
     return () => cleanup && cleanup();
   }, [activeTab, result, customCss]);
 
+  // Injecter le contenu dans l'iframe plein écran du rendu stylé
+  const injectStyledFs = useCallback((iframeEl) => {
+    if (!iframeEl || !result) return;
+    const doc = iframeEl.contentDocument || iframeEl.contentWindow?.document;
+    if (doc) {
+      doc.open();
+      doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${customCss}</style></head><body>${result}</body></html>`);
+      doc.close();
+    }
+  }, [result, customCss]);
+
+  // Mettre à jour l'iframe FS quand le contenu change (pendant que le modal est ouvert)
+  useEffect(() => {
+    if (styledFullscreen === 'render' && styledFsIframe.current) {
+      injectStyledFs(styledFsIframe.current);
+    }
+  }, [styledFullscreen, injectStyledFs]);
+
+  // Fermer les modals au changement d'onglet
+  useEffect(() => {
+    setStyledFullscreen(null);
+  }, [activeTab]);
+
+  // Fermer avec Échap
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setStyledFullscreen(null);
+        setExpandedStep(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   // Iframe pour le preview brut
   useEffect(() => {
     let cleanup;
@@ -110,7 +153,9 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
       const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
       if (doc) {
         doc.open();
-        doc.write(result);
+         doc.write(`<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<style>${BASE_PREVIEW_CSS}</style>
+</head><body>${result}</body></html>`);
         doc.close();
         // Attacher le listener et appliquer le scroll initial
         cleanup = attachIframeScroll(iframeRef.current);
@@ -145,7 +190,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
     addToast('HTML stylé téléchargé', 'success');
   };
 
-  if (!result && !error) {
+  if (result == null && !error) {
     return (
       <div className="preview-panel" style={{ justifyContent: 'center', alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
         {/* Image de fond subtile */}
@@ -251,25 +296,47 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
 
         {activeTab === 'styled' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div className="style-editor">
-              <label className="text-xs text-secondary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <Palette size={12} />
-                CSS personnalisé appliqué au résultat
-              </label>
-              <textarea
-                value={customCss}
-                onChange={e => onCssChange(e.target.value)}
-                placeholder="body { font-family: Arial; }\nh1 { color: #333; }"
-                spellCheck={false}
-              />
+
+            {/* ── Éditeur CSS — cliquable pour plein écran ── */}
+            <div
+              className="styled-clickable-zone"
+              onClick={() => setStyledFullscreen('css')}
+              title="Cliquer pour voir le CSS en plein écran"
+            >
+              <div className="style-editor" style={{ pointerEvents: 'none' }}>
+                <label className="text-xs text-secondary" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Palette size={12} />
+                  CSS personnalisé appliqué au résultat
+                </label>
+                <textarea
+                  value={customCss}
+                  readOnly
+                  spellCheck={false}
+                  style={{ cursor: 'pointer' }}
+                />
+              </div>
+              <div className="styled-clickable-hint">
+                <Maximize2 size={13} /> CSS
+              </div>
             </div>
-            <div className="preview-iframe-wrap" style={{ minHeight: 340 }}>
-              <iframe
-                ref={styledRef}
-                className="preview-iframe"
-                title="styled-preview"
-                sandbox="allow-same-origin allow-scripts allow-popups"
-              />
+
+            {/* ── Aperçu inline — cliquable pour plein écran ── */}
+            <div
+              className="styled-clickable-zone"
+              onClick={() => setStyledFullscreen('render')}
+              title="Cliquer pour voir le rendu en plein écran"
+            >
+              <div className="preview-iframe-wrap" style={{ minHeight: 340, pointerEvents: 'none' }}>
+                <iframe
+                  ref={styledRef}
+                  className="preview-iframe"
+                  title="styled-preview"
+                  sandbox="allow-same-origin allow-scripts allow-popups"
+                />
+              </div>
+              <div className="styled-clickable-hint">
+                <Maximize2 size={13} /> Rendu
+              </div>
             </div>
           </div>
         )}
@@ -357,7 +424,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
           </div>
         )}
 
-        {/* Modal plein écran pour les étapes */}
+        {/* ── Modal plein écran : étapes / code ── */}
         {expandedStep && (
           <div className="fullscreen-overlay fade-in" onClick={() => setExpandedStep(null)}>
             <div className="fullscreen-card" onClick={e => e.stopPropagation()}>
@@ -366,7 +433,7 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                   <Code2 size={16} className="text-accent" />
                   <span className="font-mono text-sm">{expandedStep.title}</span>
                 </div>
-                <button className="btn-icon" onClick={() => setExpandedStep(null)}>
+                <button className="btn-icon" onClick={() => setExpandedStep(null)} title="Fermer (Échap)">
                   <X size={20} />
                 </button>
               </div>
@@ -374,6 +441,58 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
                 <FormattedCode code={expandedStep.content} theme={theme} />
               </div>
             </div>
+          </div>
+        )}
+
+        {/* ── Modal plein écran : feuille de style CSS (colorée) ── */}
+        {styledFullscreen === 'css' && (
+          <div className="fullscreen-overlay fade-in" onClick={() => setStyledFullscreen(null)}>
+            <div className="fullscreen-card fullscreen-card--slim" onClick={e => e.stopPropagation()}>
+              <div className="fullscreen-header fullscreen-header--slim">
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Palette size={14} style={{ color: 'var(--accent-primary)', opacity: 0.8 }} />
+                  <span className="font-mono text-xs" style={{ color: 'var(--text-secondary)' }}>style.css</span>
+                  <span className="text-xs text-muted">— {customCss.length.toLocaleString()} caractères</span>
+                </div>
+                <button className="btn-icon btn-icon--slim" onClick={() => setStyledFullscreen(null)} title="Fermer (Échap)">
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="fullscreen-content-prism">
+                <FormattedCode code={customCss} language="css" theme={theme} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Modal plein écran : rendu HTML stylé (bord à bord) ── */}
+        {styledFullscreen === 'render' && (
+          <div
+            className="fullscreen-overlay fade-in"
+            onClick={() => setStyledFullscreen(null)}
+            style={{ padding: 0, alignItems: 'stretch', justifyContent: 'stretch' }}
+          >
+            {/* Bouton fermer flottant */}
+            <button
+              className="fullscreen-close-floating"
+              onClick={() => setStyledFullscreen(null)}
+              title="Fermer (Échap)"
+            >
+              <X size={16} />
+            </button>
+            <iframe
+              ref={styledFsIframe}
+              title="styled-fullscreen"
+              sandbox="allow-same-origin allow-scripts allow-popups"
+              onLoad={() => injectStyledFs(styledFsIframe.current)}
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                background: '#fff',
+                display: 'block',
+              }}
+            />
           </div>
         )}
       </div>

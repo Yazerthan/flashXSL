@@ -11,7 +11,9 @@ import { Copy } from 'lucide-react';
 const FormattedCode = forwardRef(({ code, language = 'xml', maxHeight = 'none', onScroll, theme = 'dark' }, ref) => {
   const { addToast } = useToast();
 
+  const XML_LANGS = ['xml', 'xhtml', 'html', 'markup'];
   const formattedCode = typeof code === 'string' ? (() => {
+    if (!XML_LANGS.includes(language)) return code; // CSS, bash, etc. → pas de formatter XML
     try {
       return format(code, {
         indentation: '  ',

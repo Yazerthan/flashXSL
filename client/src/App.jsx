@@ -13,6 +13,12 @@ const PIPELINE_PRESETS = [
   { id: 'preset3', name: 'Preset à venir...', xsls: [] },
 ];
 
+// Initialiser le sessionId une seule fois au démarrage de l'app
+// pour garantir la cohérence entre le chargement des presets et l'upload XML
+if (!localStorage.getItem('xsl-session-id')) {
+  localStorage.setItem('xsl-session-id', crypto.randomUUID());
+}
+
 function AppInner() {
   const { addToast } = useToast();
 
@@ -110,15 +116,24 @@ function AppInner() {
       const sessionId = localStorage.getItem('xsl-session-id') || 'default';
       setProgress(30);
 
-      const res = await fetch('/api/transform', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId,
-          sourcePath: source.path,
-          xslFiles: pipeline.map(p => ({ name: p.name, path: p.path }))
-        })
-      });
+      let res;
+      try {
+        res = await fetch('/api/transform', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            sourcePath: source.path,
+            xslFiles: pipeline.map(p => ({ name: p.name, path: p.path }))
+          })
+        });
+      } catch (networkErr) {
+        // Erreur réseau (serveur injoignable, timeout, etc.)
+        throw Object.assign(
+          new Error(`Erreur réseau : impossible de joindre le serveur (${networkErr.message})`),
+          { details: `sessionId: ${sessionId}\nsourcePath: ${source.path}\n\nVérifiez que le conteneur Docker du serveur est bien démarré.` }
+        );
+      }
 
       setProgress(80);
       const data = await res.json();
@@ -129,11 +144,16 @@ function AppInner() {
         throw err;
       }
 
-      setResult(data.result);
+      setResult(data.result ?? '');
       setSteps(data.steps);
       setResultPath(data.resultPath);
       setProgress(100);
-      addToast(`Pipeline exécuté (${data.steps.length} étape(s))`, 'success');
+
+      if (!data.result || data.result.trim() === '') {
+        addToast('Pipeline exécuté mais le résultat est vide (vérifiez votre XSL)', 'warn');
+      } else {
+        addToast(`Pipeline exécuté (${data.steps.length} étape(s))`, 'success');
+      }
 
       setTimeout(() => setProgress(0), 800);
     } catch (err) {
