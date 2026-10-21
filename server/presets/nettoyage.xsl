@@ -6,6 +6,9 @@
     <xsl:output method="xhtml" indent="yes" encoding="UTF-8" omit-xml-declaration="yes" />
 
     <xsl:strip-space elements="*" />
+    <!-- Les espaces seules contenues dans un <span> sont significatives :
+         on les conserve (sinon "1b." + " " + "Les..." donne "1b.Les..."). -->
+    <xsl:preserve-space elements="*:span" />
 
     <xsl:template match="@*|node()">
         <xsl:copy>
@@ -13,8 +16,11 @@
         </xsl:copy>
     </xsl:template>
 
+    <!-- Suppression des éléments vides. Un <span> qui contient une espace
+         n'est PAS vide : on le garde (sinon l'espace disparaît). -->
     <xsl:template
-        match="*[normalize-space(.) = '' and not(*) and not(self::hr or self::br or self::img)]" />
+        match="*[normalize-space(.) = '' and not(*) and not(self::hr or self::br or self::img)
+                 and not(self::span and string-length(.) &gt; 0)]" />
 
     <xsl:template match="div">
         <xsl:apply-templates />
@@ -119,5 +125,63 @@
     <!-- Correspond a un <p> dont normalize-space(.) = 'u2026/u2026'     -->
     <!-- ================================================================ -->
     <xsl:template match="p[normalize-space(.) = '…/…']" />
+
+    <!-- ================================================================ -->
+    <!-- Fusion des spans adjacents de même classe                        -->
+    <!-- Dans h3.•1_TITRE-ARTICLE_h3 et p.•9_MOTS-CLES, InDesign coupe     -->
+    <!-- parfois un style imbriqué en deux spans (ancre, balise XML...),   -->
+    <!-- l'un ne contenant qu'une espace (ou rien). On les réunit.         -->
+    <!-- ================================================================ -->
+
+    <xsl:variable name="paragraphes-fusion"
+        select="('•1_TITRE-ARTICLE_h3', '•9_MOTS-CLES')" />
+    <xsl:variable name="spans-fusion"
+        select="('•-NUMERO-TITRE-PRINCIPAL', '•-TITRE-PRINCIPAL',
+                 '•-TITRE-MOTS-CLES', '•-TEXTE-MOTS-CLES')" />
+    <!-- Spans qui doivent toujours commencer par une espace
+         quand ils suivent le span précédent (numéro ou "Mots clés :"). -->
+    <xsl:variable name="spans-espace-avant"
+        select="('•-TITRE-PRINCIPAL', '•-TEXTE-MOTS-CLES')" />
+
+    <xsl:template priority="2"
+        match="*[tokenize(@class, '\s+') = $paragraphes-fusion]
+                /span[@class = $spans-fusion]">
+        <xsl:variable name="precedent" select="preceding-sibling::node()[1]" />
+        <xsl:choose>
+            <!-- Span déjà absorbé par le span de même classe qui le précède -->
+            <xsl:when test="$precedent/self::span/@class = @class" />
+            <xsl:otherwise>
+                <!-- Contenu de ce span + des spans de même classe qui suivent -->
+                <xsl:variable name="contenu">
+                    <xsl:apply-templates select="." mode="fusion" />
+                </xsl:variable>
+                <!-- Espace manquante après le span précédent (ex. "Mots clés :") -->
+                <xsl:variable name="espace-manquante" as="xs:boolean"
+                    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                    select="@class = $spans-espace-avant
+                            and exists($precedent/self::span[@class = $spans-fusion])
+                            and not(matches(string($precedent), '[\s&#xA0;]$'))
+                            and not(matches(string($contenu), '^[\s&#xA0;]'))
+                            and string($contenu) != ''" />
+                <xsl:if test="$contenu/node()">
+                    <xsl:copy>
+                        <xsl:apply-templates select="@*" />
+                        <xsl:if test="$espace-manquante">
+                            <xsl:text> </xsl:text>
+                        </xsl:if>
+                        <xsl:copy-of select="$contenu" />
+                    </xsl:copy>
+                </xsl:if>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
+
+    <!-- Mode "fusion" : sort le contenu du span, puis enchaîne sur le
+         span suivant s'il est directement adjacent et de même classe. -->
+    <xsl:template match="span" mode="fusion">
+        <xsl:apply-templates select="node()" />
+        <xsl:apply-templates mode="fusion"
+            select="following-sibling::node()[1][self::span][@class = current()/@class]" />
+    </xsl:template>
 
 </xsl:stylesheet>
