@@ -15,11 +15,11 @@
 
 body {
     font-family: var(--police-principale);
-    line-height: 1.5;
+    line-height: 1.6;
     color: var(--noir);
     background-color: var(--blanc);
     margin: 2rem auto;
-    padding: 0 1rem;
+    padding: 0 1.5rem;
     max-width: 1000px;
 }
 
@@ -39,36 +39,101 @@ h7,
 .•19_TABLEAU-TITRE,
 .•19_FIGURE-TITRE {
     color: var(--vert-nathan);
-    margin-top: 1.8rem;
-    margin-bottom: 0.8rem;
+    margin-top: 2rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
 }
 
 .•1_TITRE-ARTICLE_h3 {
-    font-size: 1.8rem;
-    border-bottom: 2px solid var(--vert-nathan);
+    font-size: 1.6rem;
+    border-bottom: 3px solid var(--vert-nathan);
     padding-bottom: 0.5rem;
+    margin-top: 2.5rem;
+}
+
+h4,
+.•7_INTER-1_h4,
+.•7_INTER-1-suivant-un-INTER-2_h4 {
+    font-size: 1.2rem;
+}
+
+h5,
+.•8_INTER-2_h5,
+.•8_INTER-2-suivant-INTER-3_h5 {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+h6,
+.•8_INTER-3_h6 {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* Titres de tableaux et figures */
+.•19_TABLEAU-TITRE,
+.•19_FIGURE-TITRE {
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-style: italic;
+    margin-top: 1rem;
 }
 
 /* --- Texte et Listes --- */
 .•6_TEXTE-COURANT {
     text-align: justify;
-    margin-bottom: 1rem;
+    margin-bottom: 0.9rem;
 }
 
+.•2_NOMS-AUTEURS,
 .•2_NOMS-D-AUTEURS {
     font-style: italic;
     color: #555;
-    margin-bottom: 2rem;
+    margin-bottom: 1.8rem;
+    font-size: 0.95rem;
 }
 
 ul,
 ol {
-    padding-left: 25px;
-    margin-bottom: 1rem;
+    padding-left: 1.6rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0.9rem;
 }
 
 li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+}
+
+/* Listes imbriquees */
+li > ul,
+li > ol {
+    margin-top: 0.3rem;
+    margin-bottom: 0.3rem;
+}
+
+/* Listes ordonnees utilisees comme intertitre */
+ol > li.•7_INTER-1_h4,
+ol > li.•7_INTER-1-suivant-un-INTER-2_h4 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--vert-nathan);
+    list-style-type: decimal;
+    margin-top: 1.8rem;
+}
+
+ol > li.•6-1_TEXTE-COURANT-Enum-Chiffre {
+    margin-bottom: 0.4rem;
+}
+
+/* Listes avec tirets */
+li.•6-1_TEXTE-COURANT-Enum-Tiret {
+    list-style-type: none;
+    margin-left: -1.2rem;
+}
+
+li.•6-1_TEXTE-COURANT-Enum-Tiret::before {
+    content: "– ";
 }
 
 /* --- Gestion des Tableaux --- */
@@ -76,9 +141,66 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin: 1.5rem 0;
+    font-size: 0.93rem;
 }
 
-/* Entêtes de tableaux */
+/* --- Tableaux enfants (dans Points clés / Situations cliniques / Encadrés) --- */
+.PointCles td table,
+.PointCl-s td table,
+.SituationClinique td table,
+.Tableau td table {
+    margin: 0.6rem 0;
+    font-size: 0.85rem;
+    border: 1px solid #ccc;
+    border-collapse: collapse;
+}
+
+/* En-tête gris anthracite pour les tableaux enfants */
+.PointCles td table thead tr,
+.PointCles td table th,
+.PointCl-s td table thead tr,
+.PointCl-s td table th,
+.SituationClinique td table thead tr,
+.SituationClinique td table th,
+.Tableau td table thead tr,
+.Tableau td table th {
+    background-color: #3d3d3d;
+    color: #fff;
+    padding: 6px 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Cellules compactes */
+.PointCles td table td,
+.PointCl-s td table td,
+.SituationClinique td table td,
+.Tableau td table td {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+    line-height: 1.4;
+}
+
+/* Alternance gris clair sur les tableaux enfants */
+.PointCles td table tbody tr:nth-child(even),
+.PointCl-s td table tbody tr:nth-child(even),
+.SituationClinique td table tbody tr:nth-child(even),
+.Tableau td table tbody tr:nth-child(even) {
+    background-color: #f5f5f5;
+}
+
+/* Pas d'effet hover sur les tableaux enfants */
+.PointCles td table tbody tr:hover,
+.PointCl-s td table tbody tr:hover,
+.SituationClinique td table tbody tr:hover,
+.Tableau td table tbody tr:hover {
+    background-color: inherit;
+    transition: none;
+}
+
+/* Entetes de tableaux */
 thead tr,
 th,
 .PointCl-s_T-ti-re,
@@ -86,38 +208,63 @@ th,
 .SituationClinique_T-ti-re {
     background-color: var(--vert-nathan);
     color: var(--blanc);
-    padding: 12px;
+    padding: 10px 12px;
     text-align: left;
+    vertical-align: middle;
 }
 
 th {
-    display: flex;
+    font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
 }
 
-/* Lignes de tableau : alternance gris/blanc */
+/* Alternance gris/blanc — tableaux de données uniquement */
 tbody tr:nth-child(even) {
     background-color: var(--gris-clair);
 }
 
+tbody tr:hover {
+    background-color: #e8f4ef;
+    transition: background-color 0.15s ease;
+}
+
+/* Pas d'alternance ni de hover pour les tableaux spéciaux (parents) */
+.PointCles > tbody > tr:nth-child(even),
+.PointCl-s > tbody > tr:nth-child(even),
+.SituationClinique > tbody > tr:nth-child(even) {
+    background-color: transparent;
+}
+
+.PointCles > tbody > tr:hover,
+.PointCl-s > tbody > tr:hover,
+.SituationClinique > tbody > tr:hover {
+    background-color: transparent;
+    transition: none;
+}
+
 td {
-    padding: 10px;
+    padding: 9px 12px;
     border: 1px solid #ddd;
     vertical-align: top;
+    line-height: 1.5;
+}
+
+.•21-1_TABLEAU-TEXTE-COURANT-centre {
+    text-align: center;
 }
 
 /* --- Gestion des IMAGES --- */
-
-/* 1. Filet vert par défaut sur les images sémantiques (hors tableaux) */
 img {
     border: 1px solid var(--vert-nathan);
     padding: 2px;
     max-width: 100%;
     height: auto;
     display: block;
-    margin: 1rem 0;
+    margin: 1rem auto;
 }
 
-/* 2. EXCLUSION : Pas de bordure pour les icônes dans les tableaux ou titres */
+/* Pas de bordure pour les icones dans tableaux ou titres */
 table img,
 th img,
 td img,
@@ -132,24 +279,47 @@ h5 img,
     vertical-align: middle;
 }
 
-/* --- Blocs Spécifiques (Nathan Gabarit) --- */
+/* --- Blocs Specifiques --- */
 
-/* Points clés */
+/* Points cles */
+.PointCles,
 .PointCl-s {
     border: 2px solid var(--vert-nathan);
+    border-collapse: separate;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1.5rem 0;
 }
 
+.PointCles th,
+.PointCles td,
+.PointCl-s th,
+.PointCl-s td {
+    border: none;
+}
+
+.•3_POINTS-CLES-TITRE-NEW,
 .•3_POINTS-CL-S-TITRE-NEW {
     font-weight: bold;
     text-transform: uppercase;
     display: inline-block;
     margin-left: 5px;
+    font-size: 1rem;
+    letter-spacing: 0.05em;
 }
 
 /* Situations cliniques */
 .SituationClinique {
     border: 2px solid var(--vert-nathan);
+    border-collapse: separate;
+    border-radius: 4px;
+    overflow: hidden;
     margin-bottom: 2.5rem;
+}
+
+.SituationClinique th,
+.SituationClinique td {
+    border: none;
 }
 
 .•12_SITUATION-CLINIQUE-TITRE {
@@ -158,6 +328,7 @@ h5 img,
     margin: 0;
 }
 
+.•13_SITUATION-CLINIQUE-Q,
 .•13_SITUATION-CLINIQUE-QUESTION-BOLD-NOIR {
     font-weight: bold;
 }
@@ -170,26 +341,93 @@ h5 img,
     display: block;
 }
 
-/* Mots-clés & Références */
+/* Mots-cles & References */
+.•9_MOTS-CLES,
 .•9_MOTS-CL-S {
     background-color: var(--gris-clair);
-    padding: 1rem;
+    padding: 1rem 1.2rem;
     border-left: 5px solid var(--vert-nathan);
     margin-top: 2rem;
+    margin-bottom: 1rem;
     font-size: 0.9rem;
+    border-radius: 0 4px 4px 0;
 }
 
 .•10_REFERENCES-TITRE {
     margin-top: 2rem;
     font-weight: bold;
     color: var(--vert-nathan);
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.3rem;
+    font-size: 1rem;
 }
 
-.•11_REFERENCES-1-CHIFFRE-TEXTE {
+.•11_REFERENCES-1-CHIFFRE-TEXTE,
+.•11a_REFERENCES-1-CHIFFRE-TEXTE-Premier,
+.•11b_REFERENCES-1-CHIFFRE-TEXTE {
     font-size: 0.85rem;
-    margin-bottom: 8px;
-    padding-left: 10px;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+/* --- Sommaire --- */
+
+
+.•0_TITRE-ARTICLE-Sommaire {
+    margin: 0;
+    padding: 0;
+    border-left: 3px solid var(--vert-nathan);
+}
+
+.•0_TITRE-ARTICLE-Sommaire a {
+    text-decoration: none;
+    color: var(--noir);
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.35rem 0.8rem;
+    border-bottom: 1px solid #ebebeb;
+    transition: color 0.15s ease;
+}
+
+.•0_TITRE-ARTICLE-Sommaire a:hover {
+    color: var(--vert-nathan);
+}
+
+.•-POINT-TITRE-PRINCIPAL-Sommaire {
+    color: var(--vert-nathan);
+    font-weight: 700;
+    min-width: 2.2rem;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.•-NUMERO-TITRE-PRINCIPAL {
+    color: var(--vert-nathan);
+    font-weight: bold;
+    margin-right: 0.4rem;
+}
+
+/* En-tete de chapitre */
+.__NumChapitre,
+.__TitreChapitre {
+    color: var(--vert-nathan);
+    font-weight: bold;
+}
+
+.__NumChapitre {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0;
+}
+
+.__TitreChapitre {
+    font-size: 2rem;
+    margin-top: 0.2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid var(--vert-nathan);
+    padding-bottom: 0.5rem;
 }
 
 /* --- Divers & Overrides --- */
@@ -197,7 +435,7 @@ h5 img,
 ._idGenCharOverride-1,
 .Texte-courant-exposant,
 ._idGenCharOverride-2 {
-    font-size: 0.75em;
+    font-size: 0.72em;
     vertical-align: super;
     line-height: 0;
 }
@@ -207,60 +445,77 @@ a {
     text-decoration: underline;
 }
 
+a:hover {
+    opacity: 0.8;
+}
+
 .Ancrage {
     text-align: center;
 }
 
-/* Ajouts de h7 / h8 / h9 / h10 */
+.•-PUCE-FIN-DE-TEXTE {
+    color: var(--vert-nathan);
+    margin-left: 0.3rem;
+}
+
+._Bold {
+    font-weight: bold;
+}
+
+._Medium_Oblique_Tableau {
+    font-style: italic;
+}
+
+/* h7 / h8 / h9 / h10 : tailles lisibles en rem absolu */
 h7 {
     display: block;
-    font-size: 0.59em;
-    margin-block-start: 2.33em;
-    margin-block-end: 2.33em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    font-size: 0.88rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
     font-weight: bold;
-    unicode-bidi: isolate;
+    color: var(--vert-nathan);
 }
 
-/* h8 */
 h8 {
-    font-size: 0.53em;
-    margin-block-start: 2.5em;
-    margin-block-end: 2.5em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    display: block;
+    font-size: 0.82rem;
+    margin-top: 1.2rem;
+    margin-bottom: 0.4rem;
     font-weight: bold;
-    unicode-bidi: isolate;
+    color: var(--vert-nathan);
 }
 
-/* h9 */
 h9 {
-    font-size: 0.47em;
-    margin-block-start: 2.67em;
-    margin-block-end: 2.67em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    display: block;
+    font-size: 0.78rem;
+    margin-top: 1rem;
+    margin-bottom: 0.4rem;
     font-weight: bold;
-    unicode-bidi: isolate;
+    color: var(--vert-nathan);
 }
 
-/* h10 */
 h10 {
-    font-size: 0.42em;
-    margin-block-start: 2.83em;
-    margin-block-end: 2.83em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 0.8rem;
+    margin-bottom: 0.3rem;
     font-weight: bold;
-    unicode-bidi: isolate;
+    color: var(--vert-nathan);
 }
-
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
     body {
         margin: 1rem auto;
+        padding: 0 1rem;
+    }
+
+    .__TitreChapitre {
+        font-size: 1.5rem;
+    }
+
+    .•1_TITRE-ARTICLE_h3 {
+        font-size: 1.3rem;
     }
 
     table {
