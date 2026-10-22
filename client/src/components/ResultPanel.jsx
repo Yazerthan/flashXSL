@@ -177,17 +177,25 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
     addToast('Fichier téléchargé', 'success');
   };
 
-  const handleDownloadHtml = () => {
-    if (!result) return;
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/><style>${customCss}</style></head><body>${result}</body></html>`;
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const downloadFile = (content, type, filename) => {
+    const blob = new Blob([content], { type });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'result-styled.html';
+    a.download = filename;
     a.click();
-    URL.revokeObjectURL(url);
-    addToast('HTML stylé téléchargé', 'success');
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  // HTML et CSS téléchargés séparément : le HTML référence la feuille via <link>
+  const handleDownloadHtml = () => {
+    if (!result) return;
+    const cssName = 'result-styled.css';
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" href="./${cssName}"/></head><body>${result}</body></html>`;
+    downloadFile(html, 'text/html;charset=utf-8', 'result-styled.html');
+    // Léger délai : certains navigateurs ignorent deux téléchargements simultanés
+    setTimeout(() => downloadFile(customCss, 'text/css;charset=utf-8', cssName), 300);
+    addToast('HTML et CSS téléchargés', 'success');
   };
 
   if (result == null && !error) {

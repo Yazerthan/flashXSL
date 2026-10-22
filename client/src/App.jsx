@@ -8,7 +8,7 @@ import { Play, Zap, Settings, AlertCircle, CheckCircle, Loader2, FileCode, Link,
 import DEFAULT_RESULT_CSS from './assets/result-default.css?raw';
 
 const PIPELINE_PRESETS = [
-  { id: 'cleanINDD', name: 'Nettoyage inDesign', xsls: ['nettoyage'] },
+  { id: 'cleanINDD', name: 'Nettoyage inDesign', xsls: ['nettoyage', 'images', 'references'] },
   { id: 'word', name: 'Niso vers Word', xsls: ['niso2html'] },
   { id: 'preset3', name: 'Preset à venir...', xsls: [] },
 ];
@@ -395,7 +395,7 @@ function AppInner() {
             style={{ flex: 1, minHeight: 280 }}
           />
           <p className="text-xs text-muted">
-            Le CSS est aussi inclus dans le téléchargement HTML stylé.
+            Le téléchargement HTML stylé fournit aussi ce CSS dans un fichier séparé (result-styled.css).
           </p>
         </div>
       </aside>

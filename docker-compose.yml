@@ -1,5 +1,4 @@
 services:
-
   server:
     build:
       context: ./server
@@ -20,13 +19,11 @@ services:
       dockerfile: Dockerfile
     container_name: xsl-pipeline-client
     restart: unless-stopped
-    # ports:
-    #   - "8081:80"
     depends_on:
       - server
     networks:
       - xsl-net
-      - proxy-net # Connexion directe au proxy
+      # proxy-net : dans le override de production
 
 volumes:
   xsl-workdir:

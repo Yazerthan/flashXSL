@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns="http://www.w3.org/1999/xhtml"
     xpath-default-namespace="http://www.w3.org/1999/xhtml">
 
     <xsl:output method="xhtml" indent="yes" encoding="UTF-8" omit-xml-declaration="yes" />
@@ -182,6 +183,31 @@
         <xsl:apply-templates select="node()" />
         <xsl:apply-templates mode="fusion"
             select="following-sibling::node()[1][self::span][@class = current()/@class]" />
+    </xsl:template>
+
+    <!-- ================================================================ -->
+    <!-- Titre de chapitre : tout élément de classe __TitreChapitre       -->
+    <!-- devient un <h2> (les attributs et le contenu sont conservés).    -->
+    <!-- Priorité 3 : passe avant la règle des marqueurs de page et la    -->
+    <!-- suppression des <div>, d'où la gestion du marqueur ici aussi.    -->
+    <!-- ================================================================ -->
+    <xsl:template priority="3"
+        match="*[tokenize(@class, '\s+') = '__TitreChapitre'][not(self::h2)]">
+        <xsl:apply-templates select="span[@class='marqueur_page_web']" mode="extraction" />
+        <xsl:element name="h2" namespace="{namespace-uri()}">
+            <xsl:apply-templates select="@*" />
+            <xsl:apply-templates select="node()[not(self::span[@class='marqueur_page_web'])]" />
+        </xsl:element>
+    </xsl:template>
+
+    <!-- ================================================================ -->
+    <!-- Chemins d'images : ".../images/nom.jpg" devient "./images/nom.jpg" -->
+    <!-- et ".../image/nom.png" devient "./image/nom.png" (export InDesign). -->
+    <!-- (accepte aussi les séparateurs Windows "\").                     -->
+    <!-- ================================================================ -->
+    <xsl:template match="img/@src[matches(., '[/\\]image?[/\\]')]">
+        <xsl:attribute name="src"
+            select="replace(replace(., '^.*[/\\](image?)[/\\]', './$1/'), '\\', '/')" />
     </xsl:template>
 
 </xsl:stylesheet>

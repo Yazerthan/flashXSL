@@ -5,6 +5,8 @@
     --gris-clair: #f2f2f2;
     /* Pour l'alternance des lignes */
     --vert-nathan: #006747;
+    /* Lignes d'en-tête paires (alternance dans les thead) */
+    --vert-pale: #4f9a7c;
     --police-principale: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -219,6 +221,13 @@ th {
     letter-spacing: 0.02em;
 }
 
+/* En-têtes sur plusieurs lignes : alternance vert / vert pâle
+   (hors tableaux enfants, qui gardent leur en-tête anthracite) */
+table:not(td table) > thead > tr:nth-child(even),
+table:not(td table) > thead > tr:nth-child(even) > th {
+    background-color: var(--vert-pale);
+}
+
 /* Alternance gris/blanc — tableaux de données uniquement */
 tbody tr:nth-child(even) {
     background-color: var(--gris-clair);
@@ -262,6 +271,7 @@ img {
     height: auto;
     display: block;
     margin: 1rem auto;
+    max-height: 95vh;
 }
 
 /* Pas de bordure pour les icones dans tableaux ou titres */
@@ -277,6 +287,10 @@ h5 img,
     margin: 0;
     display: inline-block;
     vertical-align: middle;
+    align-self: center;
+    justify-self: center;
+    max-width: 50%;
+    max-height: 35vh;
 }
 
 /* --- Blocs Specifiques --- */
@@ -287,7 +301,7 @@ h5 img,
     border: 2px solid var(--vert-nathan);
     border-collapse: separate;
     border-radius: 4px;
-    overflow: hidden;
+    overflow-x: hidden;
     margin: 1.5rem 0;
 }
 
@@ -296,6 +310,20 @@ h5 img,
 .PointCl-s th,
 .PointCl-s td {
     border: none;
+}
+
+/* Bulle "!" posée à cheval sur le bord haut de l'en-tête */
+:has(> img[src*="Bulle"]) {
+    position: relative;
+    overflow: visible;
+}
+
+img[src*="Bulle"] {
+    position: absolute;
+    width: 65px;
+    top: -50%;
+    right: 20px;
+    z-index: 500;
 }
 
 .•3_POINTS-CLES-TITRE-NEW,
@@ -326,6 +354,32 @@ h5 img,
     font-weight: bold;
     font-size: 1.1rem;
     margin: 0;
+}
+
+/* Stéthoscope à droite de l'en-tête de situation clinique */
+:has(> img[src*="Steto"]) {
+    position: relative;
+    height: 80px;
+}
+
+img[src*="Steto"] {
+    position: absolute;
+    width: 60px;
+    top: 8px;
+    right: 20px;
+}
+
+/* Ordonnance en en-tête de situation clinique : sortie vers la gauche */
+.SituationClinique_Tetiere {
+    position: relative;
+}
+
+.SituationClinique_Tetiere > img[src*="Ordonnances"] {
+    position: absolute;
+    top: 70px;
+    right: 10px;
+    max-height: 500px;
+    width: 45%;
 }
 
 .•13_SITUATION-CLINIQUE-Q,
