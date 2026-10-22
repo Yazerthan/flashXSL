@@ -116,4 +116,76 @@
         </xsl:copy>
     </xsl:template>
 
+    <!-- ================================================================ -->
+    <!-- RÉFÉRENCES BIBLIOGRAPHIQUES PAR SOUS-CHAPITRE                     -->
+    <!-- Chaque sous-chapitre (h3 titre-article) a sa propre numérotation  -->
+    <!-- et sa liste <ol> après le paragraphe "Références".                -->
+    <!--  1. Chaque <li> de cette liste reçoit un @id :                    -->
+    <!--     ref-<numéro du sous-chapitre>-<rang>  (ex. "ref-1a-2")         -->
+    <!--  2. Chaque appel en exposant <a href="#_idTextAnchor…">N</a>      -->
+    <!--     (ancres InDesign supprimées par nettoyage.xsl) est réécrit    -->
+    <!--     vers la Nᵉ référence de son sous-chapitre.                    -->
+    <!-- ================================================================ -->
+
+    <!-- Sous-chapitre d'un nœud : le dernier h3 titre-article qui le précède -->
+    <xsl:function name="f:sous-chapitre" as="element()?">
+        <xsl:param name="n" as="node()" />
+        <xsl:sequence select="$n/preceding::h3[contains(@class, '•1_TITRE-ARTICLE_h3')][1]" />
+    </xsl:function>
+
+    <!-- Vrai si ce <ol> est la liste suivant un titre "Références"
+         (et non "Pour aller plus loin", etc.) -->
+    <xsl:function name="f:est-liste-references" as="xs:boolean">
+        <xsl:param name="ol" as="element()" />
+        <xsl:sequence select="exists($ol/preceding-sibling::*[1]
+            [self::p[contains(@class, 'REFERENCES-TITRE')]]
+            [f:normaliser(string(.)) = 'références'])" />
+    </xsl:function>
+
+    <!-- Liste des références d'un sous-chapitre (la première trouvée) -->
+    <xsl:function name="f:liste-references" as="element()?">
+        <xsl:param name="h3" as="element()" />
+        <xsl:sequence select="$h3/following::ol
+            [f:est-liste-references(.)]
+            [f:sous-chapitre(.) is $h3][1]" />
+    </xsl:function>
+
+    <!-- Préfixe des ids : "ref-1a" d'après le numéro du titre ("1a."),
+         ou le rang du sous-chapitre si le titre n'a pas de numéro -->
+    <xsl:function name="f:prefixe-ref" as="xs:string">
+        <xsl:param name="h3" as="element()" />
+        <xsl:variable name="numero" select="replace(f:normaliser(string(
+            $h3/span[contains(@class, 'NUMERO-TITRE-PRINCIPAL')][1])), '[^a-z0-9]+', '')" />
+        <xsl:sequence select="concat('ref-',
+            if ($numero != '') then $numero
+            else string(count($h3/preceding::h3[contains(@class, '•1_TITRE-ARTICLE_h3')]) + 1))" />
+    </xsl:function>
+
+    <!-- Lignes de la liste des références : ajout de l'@id -->
+    <xsl:template match="ol[f:est-liste-references(.)][exists(f:sous-chapitre(.))]/li">
+        <xsl:copy>
+            <xsl:apply-templates select="@*" />
+            <xsl:attribute name="id" select="concat(
+                f:prefixe-ref(f:sous-chapitre(..)), '-',
+                count(preceding-sibling::li) + 1)" />
+            <xsl:apply-templates select="node()" />
+        </xsl:copy>
+    </xsl:template>
+
+    <!-- Appels en exposant : lien vers la référence du même sous-chapitre.
+         Si la référence n'existe pas, le lien est laissé tel quel. -->
+    <xsl:template match="a[starts-with(@href, '#_idTextAnchor')]
+                          [matches(normalize-space(.), '^[0-9]+$')]">
+        <xsl:variable name="h3" select="f:sous-chapitre(.)" />
+        <xsl:variable name="liste" select="if ($h3) then f:liste-references($h3) else ()" />
+        <xsl:variable name="rang" select="xs:integer(normalize-space(.))" />
+        <xsl:copy>
+            <xsl:apply-templates select="@*" />
+            <xsl:if test="$liste and $rang le count($liste/li)">
+                <xsl:attribute name="href" select="concat('#', f:prefixe-ref($h3), '-', $rang)" />
+            </xsl:if>
+            <xsl:apply-templates select="node()" />
+        </xsl:copy>
+    </xsl:template>
+
 </xsl:stylesheet>
