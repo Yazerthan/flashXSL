@@ -69,6 +69,27 @@
         <xsl:sequence select="concat('titre-', $slug-propre)" />
     </xsl:function>
 
+    <!-- Numéro en tête d'un titre normalisé : "3. impact…" → "3",
+         "1a. les conditions…" → "1a" ; chaîne vide s'il n'y en a pas -->
+    <xsl:function name="f:numero-titre" as="xs:string">
+        <xsl:param name="texte" as="xs:string" />
+        <xsl:sequence select="
+            if (matches($texte, '^[0-9]+[a-z]?\.'))
+            then replace($texte, '^([0-9]+[a-z]?)\..*$', '$1', 's')
+            else ''" />
+    </xsl:function>
+
+    <!-- Clé : indexe les titres h3 par leur numéro ("1a", "3"…) -->
+    <xsl:key name="titres-par-numero"
+        match="h3[contains(@class, '•1_TITRE-ARTICLE_h3')]"
+        use="f:numero-titre(f:normaliser(string(.)))" />
+
+    <!-- Id d'un titre h3 : son @id s'il en a un, sinon l'id généré -->
+    <xsl:function name="f:id-titre" as="xs:string">
+        <xsl:param name="h3" as="element()" />
+        <xsl:sequence select="if ($h3/@id) then string($h3/@id) else f:generer-id(string($h3))" />
+    </xsl:function>
+
     <!-- ================================================================ -->
     <!-- Les titres h3 : ajout d'un @id déterministe                       -->
     <!-- Si le h3 a déjà un @id, on le conserve ; sinon on en génère un.  -->
@@ -92,19 +113,19 @@
     <xsl:template match="p[contains(@class, '•0_TITRE-ARTICLE-Sommaire')]//a">
         <!-- Texte de l'entrée du sommaire (extrait du span enfant ou du lien) -->
         <xsl:variable name="texte-sommaire" select="f:normaliser(string(.))" />
-        <!-- Cherche le h3 dont le texte normalisé correspond -->
-        <xsl:variable name="titre-cible" select="key('titres-par-texte', $texte-sommaire)" />
+        <!-- Cherche le h3 de même numéro ("3."), sinon de même texte normalisé :
+             le numéro résiste aux coquilles de l'export (ex. "le vHazard Score") -->
+        <xsl:variable name="numero" select="f:numero-titre($texte-sommaire)" />
+        <xsl:variable name="titre-cible" select="
+            (if ($numero != '') then key('titres-par-numero', $numero) else (),
+             key('titres-par-texte', $texte-sommaire))[1]" />
         <xsl:copy>
             <xsl:apply-templates select="@*[not(name() = 'href')]" />
             <xsl:attribute name="href">
                 <xsl:choose>
                     <xsl:when test="$titre-cible">
                         <!-- Pointe vers l'id du titre (existant ou généré) -->
-                        <xsl:value-of select="concat('#',
-                            if ($titre-cible[1]/@id)
-                            then $titre-cible[1]/@id
-                            else f:generer-id(string($titre-cible[1]))
-                        )" />
+                        <xsl:value-of select="concat('#', f:id-titre($titre-cible))" />
                     </xsl:when>
                     <xsl:otherwise>
                         <!-- Pas de titre trouvé : on laisse le href d'origine -->
@@ -112,6 +133,41 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
+            <xsl:apply-templates select="node()" />
+        </xsl:copy>
+    </xsl:template>
+
+    <!-- ================================================================ -->
+    <!-- LIENS VIDES (href="" dès l'export InDesign)                       -->
+    <!--  - texte = une URL ("https://…", "www.…") : le texte devient href  -->
+    <!--  - "chapitre N, texte M" avec N = chapitre courant : lien vers    -->
+    <!--    le sous-chapitre M                                             -->
+    <!--  - sinon (autre chapitre, noms d'auteurs…) : laissé tel quel      -->
+    <!-- ================================================================ -->
+
+    <!-- Numéro du chapitre courant ("Chapitre 1") -->
+    <xsl:variable name="chapitre-courant"
+        select="normalize-space((//span[@class = 'Numchapitre'])[1])" />
+
+    <xsl:template priority="2"
+        match="a[@href = ''][not(ancestor::p[contains(@class, '•0_TITRE-ARTICLE-Sommaire')])]">
+        <!-- Texte sans espaces : les URL longues sont coupées par des retours à la ligne -->
+        <xsl:variable name="url" select="replace(string(.), '\s+', '')" />
+        <xsl:variable name="renvoi" select="f:normaliser(string(.))" />
+        <xsl:variable name="regex-renvoi" select="'^chapitre ([0-9]+) ?, ?texte ([0-9]+[a-z]?)$'" />
+        <xsl:variable name="cible" as="xs:string?" select="
+            if (matches($url, '^(https?://|www\.)[^\s]+$'))
+            then (if (starts-with($url, 'www.')) then concat('https://', $url) else $url)
+            else if (matches($renvoi, $regex-renvoi)
+                     and replace($renvoi, $regex-renvoi, '$1') = $chapitre-courant)
+            then (for $h3 in key('titres-par-numero', replace($renvoi, $regex-renvoi, '$2'))[1]
+                  return concat('#', f:id-titre($h3)))
+            else ()" />
+        <xsl:copy>
+            <xsl:apply-templates select="@*" />
+            <xsl:if test="exists($cible)">
+                <xsl:attribute name="href" select="$cible" />
+            </xsl:if>
             <xsl:apply-templates select="node()" />
         </xsl:copy>
     </xsl:template>
