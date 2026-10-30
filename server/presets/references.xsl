@@ -88,6 +88,8 @@
     <!-- Liens du sommaire : réécriture du @href                           -->
     <!-- On cherche le <a> à l'intérieur d'un <p> Sommaire, et on         -->
     <!-- réécrit son href vers le #id du h3 correspondant.                 -->
+    <!-- Si aucun titre ne correspond ET que le href d'origine est vide,   -->
+    <!-- le @href est supprimé (pas de href="" dans le HTML final).        -->
     <!-- ================================================================ -->
     <xsl:template match="p[contains(@class, '•0_TITRE-ARTICLE-Sommaire')]//a">
         <!-- Texte de l'entrée du sommaire (extrait du span enfant ou du lien) -->
@@ -96,22 +98,21 @@
         <xsl:variable name="titre-cible" select="key('titres-par-texte', $texte-sommaire)" />
         <xsl:copy>
             <xsl:apply-templates select="@*[not(name() = 'href')]" />
-            <xsl:attribute name="href">
-                <xsl:choose>
-                    <xsl:when test="$titre-cible">
-                        <!-- Pointe vers l'id du titre (existant ou généré) -->
-                        <xsl:value-of select="concat('#',
-                            if ($titre-cible[1]/@id)
-                            then $titre-cible[1]/@id
-                            else f:generer-id(string($titre-cible[1]))
-                        )" />
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <!-- Pas de titre trouvé : on laisse le href d'origine -->
-                        <xsl:value-of select="@href" />
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:attribute>
+            <xsl:choose>
+                <xsl:when test="$titre-cible">
+                    <!-- Pointe vers l'id du titre (existant ou généré) -->
+                    <xsl:attribute name="href" select="concat('#',
+                        if ($titre-cible[1]/@id)
+                        then $titre-cible[1]/@id
+                        else f:generer-id(string($titre-cible[1]))
+                    )" />
+                </xsl:when>
+                <xsl:when test="normalize-space(@href) != ''">
+                    <!-- Pas de titre trouvé mais href non vide : on le conserve -->
+                    <xsl:attribute name="href" select="@href" />
+                </xsl:when>
+                <!-- Sinon : href vide ou absent → on n'émet pas de @href du tout -->
+            </xsl:choose>
             <xsl:apply-templates select="node()" />
         </xsl:copy>
     </xsl:template>

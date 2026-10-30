@@ -191,7 +191,27 @@ export default function ResultPanel({ source, result, steps, resultPath, customC
   const handleDownloadHtml = () => {
     if (!result) return;
     const cssName = 'result-styled.css';
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" href="./${cssName}"/></head><body>${result}</body></html>`;
+
+    // Si result contient déjà un document HTML complet (html/head/body issu de l'export InDesign),
+    // on réécrit le <head> pour injecter notre CSS et on ne rajoute pas de wrapper supplémentaire.
+    // Sinon (fragment HTML pur), on enveloppe normalement.
+    const headLink = `<link rel="stylesheet" href="./${cssName}"/>`;
+    const metaCharset = `<meta charset="utf-8"/>`;
+
+    let html;
+    if (/<!DOCTYPE|<html[\s>]/i.test(result)) {
+      // Cas document complet : on injecte le lien CSS juste après le <head>
+      // et on remplace le charset existant pour éviter les doublons.
+      html = result
+        // Supprime un éventuel meta charset déjà présent
+        .replace(/<meta[^>]+charset[^>]*>/i, '')
+        // Injecte charset + lien CSS au tout début du <head>
+        .replace(/(<head[^>]*>)/i, `$1${metaCharset}${headLink}`);
+    } else {
+      // Cas fragment : on enveloppe proprement
+      html = `<!DOCTYPE html><html><head>${metaCharset}${headLink}</head><body>${result}</body></html>`;
+    }
+
     downloadFile(html, 'text/html;charset=utf-8', 'result-styled.html');
     // Léger délai : certains navigateurs ignorent deux téléchargements simultanés
     setTimeout(() => downloadFile(customCss, 'text/css;charset=utf-8', cssName), 300);
