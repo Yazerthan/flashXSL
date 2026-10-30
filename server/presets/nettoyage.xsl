@@ -53,19 +53,7 @@
             class="page-marker" />
     </xsl:template>
 
-    <!-- Suppression des ancres InDesign vides (_idTextAnchor…),           -->
-    <!-- SAUF celles qui sont la cible d'un lien du sommaire.              -->
-    <!-- Ces ancres référencées servent de fallback quand le titre         -->
-    <!-- correspondant n'a pas de <h3> généré.                             -->
-    <xsl:template match="a[starts-with(@id, '_idTextAnchor') and .='']">
-        <xsl:variable name="ancre" select="concat('#', @id)" />
-        <!-- On conserve l'ancre si elle est pointée par au moins un lien du sommaire -->
-        <xsl:if test="//p[contains(@class, '•0_TITRE-ARTICLE-Sommaire')]//a[@href = $ancre]">
-            <xsl:copy>
-                <xsl:apply-templates select="@*" />
-            </xsl:copy>
-        </xsl:if>
-    </xsl:template>
+    <xsl:template match="a[starts-with(@id, '_idTextAnchor') and .='']" />
 
     <!-- Nettoyage des liens pour garder uniquement l'ancre relative (#id) -->
     <xsl:template match="@href">
