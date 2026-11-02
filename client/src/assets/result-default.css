@@ -289,8 +289,7 @@ h5 img,
     vertical-align: middle;
     align-self: center;
     justify-self: center;
-    max-width: 50%;
-    max-height: 35vh;
+    max-width: 460px;
 }
 
 /* --- Blocs Specifiques --- */
@@ -494,12 +493,12 @@ img[src*="Steto"] {
     line-height: 0;
 }
 
-a {
+a[href] {
     color: var(--vert-nathan);
     text-decoration: underline;
 }
 
-a:hover {
+a[href]:hover {
     opacity: 0.8;
 }
 
@@ -576,4 +575,14 @@ h10 {
         display: block;
         overflow-x: auto;
     }
+}
+
+/* Unexepted style */
+.list-flex {
+display: flex;
+}
+
+.list-flex img {
+    height: 35px;
+    margin: 2px 12px;
 }

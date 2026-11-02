@@ -156,8 +156,8 @@
         <xsl:variable name="renvoi" select="f:normaliser(string(.))" />
         <xsl:variable name="regex-renvoi" select="'^chapitre ([0-9]+) ?, ?texte ([0-9]+[a-z]?)$'" />
         <xsl:variable name="cible" as="xs:string?" select="
-            if (matches($url, '^(https?://|www\.)[^\s]+$'))
-            then (if (starts-with($url, 'www.')) then concat('https://', $url) else $url)
+            if (matches($url, '^(https?://|www\.|doi\.org/)[^\s]+$'))
+            then (if (starts-with($url, 'www.') or starts-with($url, 'doi.org/')) then concat('https://', $url) else $url)
             else if (matches($renvoi, $regex-renvoi)
                      and replace($renvoi, $regex-renvoi, '$1') = $chapitre-courant)
             then (for $h3 in key('titres-par-numero', replace($renvoi, $regex-renvoi, '$2'))[1]
@@ -167,9 +167,54 @@
             <xsl:apply-templates select="@*" />
             <xsl:if test="exists($cible)">
                 <xsl:attribute name="href" select="$cible" />
+                <xsl:if test="starts-with($cible, 'http://') or starts-with($cible, 'https://')">
+                    <xsl:if test="not(@target)">
+                        <xsl:attribute name="target" select="'_blank'" />
+                    </xsl:if>
+                    <xsl:if test="not(@rel)">
+                        <xsl:attribute name="rel" select="'noopener noreferrer'" />
+                    </xsl:if>
+                </xsl:if>
             </xsl:if>
             <xsl:apply-templates select="node()" />
         </xsl:copy>
+    </xsl:template>
+
+    <!-- ================================================================ -->
+    <!-- AUTO-DÉTECTION DES LIENS EN TEXTE BRUT (non balisés <a>)         -->
+    <!-- Détecte les URLs écrites en dur dans les références ou le texte  -->
+    <!-- et les transforme en balises <a> cliquables.                     -->
+    <!-- ================================================================ -->
+    <xsl:template match="text()[not(ancestor::a or ancestor::head or ancestor::style or ancestor::script)]">
+        <xsl:choose>
+            <xsl:when test="matches(., '(https?://|www\.|doi\.org/)[^\s&#xA0;&#x202F;]+')">
+                <xsl:analyze-string select="." regex="(https?://|www\.|doi\.org/)[^\s&lt;&gt;&quot;'«»&#xA0;&#x202F;]+">
+                    <xsl:matching-substring>
+                        <xsl:variable name="brut" select="." />
+                        <!-- Si l'URL ne contient pas de '(', on sépare une éventuelle parenthèse fermante avec la ponctuation finale -->
+                        <xsl:variable name="pattern-ponct" select="if (contains($brut, '(')) then '[.,;:!?\]»''&quot;]+$' else '[.,;:!?\]»''&quot;\)]+$'" />
+                        <xsl:variable name="url-propre" select="replace($brut, $pattern-ponct, '')" />
+                        <xsl:variable name="ponct" select="substring($brut, string-length($url-propre) + 1)" />
+
+                        <xsl:variable name="href" as="xs:string" select="
+                            if (starts-with($url-propre, 'www.') or starts-with($url-propre, 'doi.org/'))
+                            then concat('https://', $url-propre)
+                            else $url-propre" />
+
+                        <a href="{$href}" target="_blank" rel="noopener noreferrer">
+                            <xsl:value-of select="$url-propre" />
+                        </a>
+                        <xsl:value-of select="$ponct" />
+                    </xsl:matching-substring>
+                    <xsl:non-matching-substring>
+                        <xsl:value-of select="." />
+                    </xsl:non-matching-substring>
+                </xsl:analyze-string>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="." />
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <!-- ================================================================ -->
