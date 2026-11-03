@@ -195,6 +195,24 @@ a {
     font-family: 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
 }
 
+._Medium_Oblique_Tableau {
+    font-style: italic;
+    font-weight: 500;
+}
+
+._Heavy_Oblique {
+    font-weight: 800;
+    font-style: italic;
+}
+
+._Bold.Italique,
+._Bold-Italique,
+._Bold_Italique,
+._Bold\ Italique {
+    font-weight: bold;
+    font-style: italic;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
     body { margin: 1rem auto; }

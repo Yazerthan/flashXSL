@@ -140,6 +140,16 @@ li.•6-1_TEXTE-COURANT-Enum-Tiret::before {
     content: "– ";
 }
 
+p.•15_CONSEIL-TEXTE-tiret {
+    padding-left: 1.2rem;
+    text-indent: -1.2rem;
+    margin-bottom: 0.4rem;
+}
+
+p.•15_CONSEIL-TEXTE-tiret::before {
+    content: "– ";
+}
+
 /* --- Gestion des Tableaux --- */
 table {
     width: 100%;
@@ -519,6 +529,20 @@ a[href]:hover {
 }
 
 ._Medium_Oblique_Tableau {
+    font-style: italic;
+    font-weight: 500;
+}
+
+._Heavy_Oblique {
+    font-weight: 800;
+    font-style: italic;
+}
+
+._Bold.Italique,
+._Bold-Italique,
+._Bold_Italique,
+._Bold\ Italique {
+    font-weight: bold;
     font-style: italic;
 }
 
