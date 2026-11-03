@@ -191,6 +191,10 @@ a {
     text-align: center;
 }
 
+.zapf {
+    font-family: 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
     body { margin: 1rem auto; }

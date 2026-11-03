@@ -520,6 +520,10 @@ a[href]:hover {
     font-style: italic;
 }
 
+.zapf {
+    font-family: 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
+}
+
 /* h7 / h8 / h9 / h10 : tailles lisibles en rem absolu */
 h7 {
     display: block;
