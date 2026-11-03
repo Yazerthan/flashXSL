@@ -129,11 +129,13 @@ ol > li.•6-1_TEXTE-COURANT-Enum-Chiffre {
 }
 
 /* Listes avec tirets */
+li.•15_CONSEIL-TEXTE-tiret,
 li.•6-1_TEXTE-COURANT-Enum-Tiret {
     list-style-type: none;
     margin-left: -1.2rem;
 }
 
+li.•15_CONSEIL-TEXTE-tiret::before,
 li.•6-1_TEXTE-COURANT-Enum-Tiret::before {
     content: "– ";
 }
