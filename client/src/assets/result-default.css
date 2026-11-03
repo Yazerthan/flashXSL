@@ -417,7 +417,8 @@ img[src*="Steto"] {
 
 .•11_REFERENCES-1-CHIFFRE-TEXTE,
 .•11a_REFERENCES-1-CHIFFRE-TEXTE-Premier,
-.•11b_REFERENCES-1-CHIFFRE-TEXTE {
+.•11b_REFERENCES-1-CHIFFRE-TEXTE,
+.•11c_REFERENCES-1-CHIFFRE-TEXTE-10-et-plus {
     font-size: 0.85rem;
     margin-bottom: 6px;
     color: #333;
