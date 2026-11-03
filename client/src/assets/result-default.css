@@ -399,6 +399,7 @@ img[src*="Steto"] {
 }
 
 .•14_SITUATION-CLINIQUE-INTER-VERT,
+.•14_SITUATION-CLINIQUE-STRATEGIE,
 .•14-1_SITUATION-CLINIQUE-INTER-VERT {
     color: var(--vert-nathan);
     font-weight: bold;
