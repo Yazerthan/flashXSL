@@ -525,7 +525,8 @@ a[href]:hover {
     margin-left: 0.3rem;
 }
 
-._Bold {
+._Bold,
+.•-TABLEAU-TEXTE-BOLD {
     font-weight: bold;
 }
 
