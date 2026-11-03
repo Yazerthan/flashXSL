@@ -530,7 +530,8 @@ a[href]:hover {
 }
 
 ._Ital,
-._Italique {
+._Italique,
+._Light-ital {
     font-style: italic;
 }
 
