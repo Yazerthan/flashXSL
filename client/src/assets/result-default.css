@@ -1,3 +1,18 @@
+/* --- Polices personnalisées --- */
+@font-face {
+    font-family: 'ZAPFDINGBATS';
+    src: url('./ZAPFDINGBATS.OTF') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ITC Zapf Dingbats Std';
+    src: url('./ZAPFDINGBATS.OTF') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* --- Variables & Configuration --- */
 :root {
     --blanc: #ffffff;
@@ -561,7 +576,7 @@ a[href]:hover {
 }
 
 .zapf {
-    font-family: 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
+    font-family: 'ZAPFDINGBATS', 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
 }
 
 /* h7 / h8 / h9 / h10 : tailles lisibles en rem absolu */

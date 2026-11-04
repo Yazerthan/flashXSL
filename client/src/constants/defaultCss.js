@@ -1,4 +1,19 @@
-export const NATHAN_DEFAULT_CSS = `/* --- Variables & Configuration --- */
+export const NATHAN_DEFAULT_CSS = `/* --- Polices personnalisées --- */
+@font-face {
+    font-family: 'ZAPFDINGBATS';
+    src: url('./ZAPFDINGBATS.OTF') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ITC Zapf Dingbats Std';
+    src: url('./ZAPFDINGBATS.OTF') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* --- Variables & Configuration --- */
 :root {
     --blanc: #ffffff;
     --noir: #000000;
@@ -192,7 +207,7 @@ a {
 }
 
 .zapf {
-    font-family: 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
+    font-family: 'ZAPFDINGBATS', 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
 }
 
 ._Bold {
