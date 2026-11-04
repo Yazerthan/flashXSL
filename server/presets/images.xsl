@@ -62,6 +62,16 @@
             <img class="_idGenObjectAttribute-1" src="./image/126.png" alt="" />
             <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
         </m:motif>
+        <!-- Chap04, texte 20 -->
+        <m:motif src="./image/Bulle.png" alt="">
+            <img class="_idGenObjectAttribute-1" src="./image/58.png" alt="" />
+            <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
+        </m:motif>
+        <!-- Chap07, textes 39 et 40 -->
+        <m:motif src="./image/Bulle.png" alt="">
+            <img class="_idGenObjectAttribute-1" src="./image/20.png" alt="" />
+            <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
+        </m:motif>
     </xsl:variable>
 
     <!-- Copie à l'identique de tout le reste -->
