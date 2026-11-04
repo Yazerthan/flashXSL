@@ -40,6 +40,19 @@
             <img class="_idGenObjectAttribute-1" src="./image/9.png" alt="" />
             <img class="_idGenObjectAttribute-1" src="./image/10.png" alt="" />
         </m:motif>
+        <!-- Même stéthoscope, numéroté à partir de 1 (chapitres sans bulle
+             avant la 1re situation clinique, ex. Chap02) -->
+        <m:motif src="./image/Steto.png" alt="" ordre="libre">
+            <img class="_idGenObjectAttribute-1" src="./image/1.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/2.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/3.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/4.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/5.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/6.png" alt="" />
+            <img class="_idGenObjectAttribute-1" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/8.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/9.png" alt="" />
+        </m:motif>
         <m:motif src="./image/Bulle.png" alt="">
             <img class="_idGenObjectAttribute-1" src="./image/1.png" alt="" />
             <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
