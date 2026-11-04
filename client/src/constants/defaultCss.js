@@ -204,6 +204,12 @@ a {
     font-style: italic;
 }
 
+._Souligne,
+._Souligné,
+._Soulign- {
+    text-decoration: underline;
+}
+
 ._Medium_Oblique_Tableau {
     font-style: italic;
     font-weight: 500;
