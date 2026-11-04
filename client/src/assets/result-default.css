@@ -654,7 +654,8 @@ h10 {
 
 /* Unexepted style */
 .list-flex {
-display: flex;
+    display: flex;
+    align-items: center;
 }
 
 .list-flex img {
