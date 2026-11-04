@@ -243,6 +243,20 @@ a {
     font-style: italic;
 }
 
+._Souligne-medium-obli,
+._Souligné-medium-obli,
+._Soulign--medium-obli {
+    font-weight: 500;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+._Bold-soul,
+._Bold_soul {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
     body { margin: 1rem auto; }
