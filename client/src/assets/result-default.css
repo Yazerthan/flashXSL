@@ -83,8 +83,12 @@ h7,
 }
 
 .•6-9_INTER-0_h3-9 {
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     text-transform: capitalize;
+    color: var(--vert-nathan);
+    margin-top: 1rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.2;
 }
 
 h4,
