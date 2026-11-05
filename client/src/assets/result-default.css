@@ -561,6 +561,14 @@ img[src*="Steto"] {
     line-height: 0;
 }
 
+th .Appel,
+th ._Exposant,
+th .idGenCharOverride-1,
+th .Texte-courant-exposant,
+th ._idGenCharOverride-2 {
+     color:#ffffff
+}
+
 a[href] {
     color: var(--vert-nathan);
     text-decoration: underline;
