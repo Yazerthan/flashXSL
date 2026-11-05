@@ -542,6 +542,7 @@ a[href]:hover {
 }
 
 ._Bold,
+.-SYMBOL-bold,
 .•-TABLEAU-TEXTE-BOLD {
     font-weight: bold;
 }
