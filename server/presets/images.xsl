@@ -72,6 +72,11 @@
             <img class="_idGenObjectAttribute-1" src="./image/20.png" alt="" />
             <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
         </m:motif>
+        <!-- Chap14, texte 134 -->
+        <m:motif src="./image/Bulle.png" alt="">
+            <img class="_idGenObjectAttribute-1" src="./image/134.png" alt="" />
+            <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
+        </m:motif>
     </xsl:variable>
 
     <!-- Copie à l'identique de tout le reste -->
