@@ -695,6 +695,6 @@ h10 {
 
 .ordo-flow {
     display: flex;
-    flex-wrap: balance;
+    flex-wrap: wrap;
     justify-content: center;
 }
