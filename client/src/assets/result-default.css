@@ -662,3 +662,9 @@ h10 {
     height: 35px;
     margin: 2px 12px;
 }
+
+.ordo-flow {
+    display: flex;
+    flex-wrap: balance;
+    justify-content: center;
+}
