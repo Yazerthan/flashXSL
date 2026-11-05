@@ -27,6 +27,20 @@ export const NATHAN_DEFAULT_CSS = `/* --- Polices personnalisées --- */
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'wingding';
+    src: url('./wingding.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Wingdings';
+    src: url('./wingding.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* --- Variables & Configuration --- */
 :root {
     --blanc: #ffffff;
@@ -228,6 +242,11 @@ a {
 .-SYMBOL-bold {
     font-family: 'SymbolBold', 'Symbol', sans-serif;
     font-weight: bold;
+}
+
+.wingding,
+.Wingdings {
+    font-family: 'wingding', 'Wingdings', sans-serif;
 }
 
 ._Bold {

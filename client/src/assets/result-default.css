@@ -27,6 +27,20 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'wingding';
+    src: url('./wingding.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Wingdings';
+    src: url('./wingding.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 /* --- Variables & Configuration --- */
 :root {
     --blanc: #ffffff;
@@ -622,6 +636,11 @@ a[href]:hover {
 .-SYMBOL-bold {
     font-family: 'SymbolBold', 'Symbol', sans-serif;
     font-weight: bold;
+}
+
+.wingding,
+.Wingdings {
+    font-family: 'wingding', 'Wingdings', sans-serif;
 }
 
 /* h7 / h8 / h9 / h10 : tailles lisibles en rem absolu */
