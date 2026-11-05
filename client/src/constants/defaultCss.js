@@ -13,6 +13,20 @@ export const NATHAN_DEFAULT_CSS = `/* --- Polices personnalisées --- */
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'SymbolBold';
+    src: url('./SymbolBold.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SymbolBold';
+    src: url('./SymbolBold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 /* --- Variables & Configuration --- */
 :root {
     --blanc: #ffffff;
@@ -208,6 +222,12 @@ a {
 
 .zapf {
     font-family: 'ZAPFDINGBATS', 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
+}
+
+.•-SYMBOL-bold,
+.-SYMBOL-bold {
+    font-family: 'SymbolBold', 'Symbol', sans-serif;
+    font-weight: bold;
 }
 
 ._Bold {

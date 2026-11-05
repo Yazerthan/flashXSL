@@ -13,6 +13,20 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'SymbolBold';
+    src: url('./SymbolBold.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SymbolBold';
+    src: url('./SymbolBold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 /* --- Variables & Configuration --- */
 :root {
     --blanc: #ffffff;
@@ -542,7 +556,6 @@ a[href]:hover {
 }
 
 ._Bold,
-.-SYMBOL-bold,
 .•-TABLEAU-TEXTE-BOLD {
     font-weight: bold;
 }
@@ -593,6 +606,12 @@ a[href]:hover {
 
 .zapf {
     font-family: 'ZAPFDINGBATS', 'ITC Zapf Dingbats Std', 'Zapf Dingbats', sans-serif;
+}
+
+.•-SYMBOL-bold,
+.-SYMBOL-bold {
+    font-family: 'SymbolBold', 'Symbol', sans-serif;
+    font-weight: bold;
 }
 
 /* h7 / h8 / h9 / h10 : tailles lisibles en rem absolu */
