@@ -53,8 +53,29 @@
             <img class="_idGenObjectAttribute-1" src="./image/8.png" alt="" />
             <img class="_idGenObjectAttribute-1" src="./image/9.png" alt="" />
         </m:motif>
+        <!-- Encore un ordre // Chapitre 19 -->
+        <m:motif src="./image/Steto.png" alt="" ordre="libre">
+            <img class="_idGenObjectAttribute-1" src="./image/3.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/4.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/5.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/6.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/7.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/8.png" alt="" />
+            <img class="_idGenObjectAttribute-1" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/10.png" alt="" />
+            <img class="_idGenObjectAttribute-1" src="./image/11.png" alt="" />
+        </m:motif>
+
         <m:motif src="./image/Bulle.png" alt="">
             <img class="_idGenObjectAttribute-1" src="./image/1.png" alt="" />
+            <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
+        </m:motif>
+        <m:motif src="./image/Bulle.png" alt="">
+            <img class="_idGenObjectAttribute-1" src="./image/49.png" alt="" />ss
+            <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
+        </m:motif>
+        <m:motif src="./image/Bulle.png" alt="">
+            <img class="_idGenObjectAttribute-1" src="./image/11.png" alt="" />
             <p class="Paragraphe-standard"><span class="Exclamation">!</span></p>
         </m:motif>
         <!-- Même bulle, exportée sous un autre numéro selon les chapitres -->
